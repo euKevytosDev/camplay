@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+LOGO_PATH = Path(__file__).resolve().parent / "static" / "logo-watermark.png"
 
 
 class VideoBuffer:
@@ -127,8 +128,22 @@ class VideoBuffer:
                 "0",
                 "-i",
                 str(list_file),
-                "-map",
-                "0:v:0",
+            ]
+            if LOGO_PATH.is_file():
+                cmd += [
+                    "-i",
+                    str(LOGO_PATH),
+                    "-filter_complex",
+                    "[1:v]scale=-1:168,format=rgba,colorchannelmixer=rr=0:gg=0:bb=0:aa=0.55[sh];"
+                    "[1:v]scale=-1:168[wm];"
+                    "[0:v][sh]overlay=28:28[base];"
+                    "[base][wm]overlay=24:24:format=auto[v]",
+                    "-map",
+                    "[v]",
+                ]
+            else:
+                cmd += ["-map", "0:v:0"]
+            cmd += [
                 "-map",
                 "0:a:0?",
                 "-c:v",

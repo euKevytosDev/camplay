@@ -459,16 +459,6 @@ h1 em { font-style: normal; color: var(--lime); display: block; }
   object-fit: cover;
   display: block;
 }
-.shot-logo {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  height: 42px;
-  width: auto;
-  pointer-events: none;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
-  z-index: 2;
-}
 .shot-actions {
   display: flex;
   align-items: center;
@@ -583,7 +573,6 @@ input {
   .terms { grid-template-columns: 1fr 1fr; gap: 18px; }
   .court-list, .chips { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
   .shot-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 340px)); justify-content: center; }
-  .shot-logo { top: 8px; right: 8px; height: 64px; }
   .quadra-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 }
 

@@ -344,7 +344,6 @@ function shotCard(replay) {
     <article class="shot">
       <div class="shot-media">
         ${video}
-        <img class="shot-logo" src="static/logo.svg?v=4" alt="">
       </div>
       <div class="shot-actions">
         <span class="shot-time">${replay.time_label}</span>
