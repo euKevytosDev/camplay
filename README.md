@@ -1,6 +1,6 @@
-# Camplay
+# CliquePlay
 
-Sistema de replay de jogadas: câmera IP → buffer no servidor → botão salva os últimos 30s → download/QR.
+Site para ver e baixar o replay da quadra. A câmera manda o vídeo, o botão pede os últimos 30s e o card aparece no celular.
 
 ## O que já funciona (MVP local)
 
@@ -30,8 +30,9 @@ source .venv/bin/activate
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-- Saúde: http://127.0.0.1:8000/health  
-- Simular botão: `curl -X POST http://127.0.0.1:8000/clip`  
+- Site: http://127.0.0.1:8000/
+- Saúde: http://127.0.0.1:8000/health
+- Simular botão: `curl -X POST http://127.0.0.1:8000/clip`
 - Download: use a URL retornada em `download`
 
 ## URL RTSP Intelbras (exemplo)
@@ -42,23 +43,24 @@ rtsp://USUARIO:SENHA@IP:554/cam/realmonitor?channel=1&subtype=0
 
 `subtype=0` = stream principal (alta qualidade).
 
-## Deploy no Coolify (projeto Kevin 3)
+## Deploy no Coolify
 
-O app sobe com o `Dockerfile` desta pasta. No Coolify:
+O app sobe com o `Dockerfile` desta pasta. O site e a API ficam no mesmo serviço.
 
-1. Criar um **projeto novo** chamado `Kevin 3` (separado dos outros).
-2. Adicionar um recurso **Application** apontando para este repositório, ou colar o Dockerfile.
-3. Porta do container: `8000`.
-4. Variável de ambiente `CAMERA_RTSP` com a URL da câmera.
-5. Volume persistente em `/app/clips` (e `/app/buffer`, se quiser).
+1. Porta do container: `8000`.
+2. `CAMERA_RTSP` só quando a câmera for alcançável pela VPS.
+3. Volumes persistentes em `/app/clips`, `/app/data` e, se quiser, `/app/buffer`.
 
-O health check é `GET /health`.
+O health check é `GET /health`. O site abre em `/`.
 
 A câmera em `192.168.x.x` só é vista na rede da quadra. O servidor na nuvem só recebe o vídeo quando existir um túnel (Tailscale, Cloudflare ou similar) entre a quadra e a VPS, ou quando o stream for enviado para um endereço público.
 
 ## Próximos passos
 
+- [x] Página mobile: quadras, card do lance, download sem conta
+- [x] Conta opcional, favoritos e pedido de vídeo reservado
 - [ ] Plaquinha WT32 chama `POST /clip` na rede
-- [ ] Página com um card por aperto (dois vídeos juntos)
+- [ ] Pagamento do lance reservado direto para o dono da quadra
 - [ ] Túnel da quadra até o Coolify
-- [ ] Multi-câmera por quadra
+- [ ] Segundo ângulo no mesmo card
+- [ ] Apontar cliqueplay.com.br para este serviço

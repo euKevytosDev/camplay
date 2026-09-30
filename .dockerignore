@@ -3,6 +3,7 @@
 .git
 buffer
 clips
+data
 __pycache__
 *.mp4
 *.ts

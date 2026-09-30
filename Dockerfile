@@ -11,13 +11,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
 
-RUN mkdir -p /app/buffer /app/clips
+RUN mkdir -p /app/buffer /app/clips /app/data
 
 ENV HOST=0.0.0.0
 ENV PORT=8000
 ENV BUFFER_SECONDS=120
 ENV CLIP_SECONDS=30
 ENV SEGMENT_SECONDS=2
+ENV DATABASE_PATH=/app/data/cliqueplay.db
+ENV DEFAULT_COURT_SLUG=quadra-teste
 
 EXPOSE 8000
 

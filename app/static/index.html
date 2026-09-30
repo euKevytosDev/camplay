@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07110c">
+  <meta name="description" content="CliquePlay guarda o lance da quadra. Um toque no botão e os vídeos ficam prontos para baixar.">
+  <title>CliquePlay — o replay da quadra</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css?v=1">
+</head>
+<body>
+  <header class="topbar">
+    <a class="logo" href="#inicio" data-view="inicio">Clique<span>Play</span></a>
+    <nav class="desk-nav">
+      <a href="#inicio" data-view="inicio">Início</a>
+      <a href="#quadras" data-view="quadras">Quadras</a>
+      <a href="#como" data-view="como">Como funciona</a>
+      <a href="#termos" data-view="termos">Termos</a>
+    </nav>
+    <button class="account-btn" id="account-btn" type="button">Entrar</button>
+  </header>
+
+  <main id="app"></main>
+
+  <nav class="tabbar" aria-label="Navegação">
+    <a href="#inicio" data-view="inicio">Início</a>
+    <a href="#quadras" data-view="quadras">Quadras</a>
+    <a href="#conta" data-view="conta">Conta</a>
+  </nav>
+
+  <script src="/static/app.js?v=1"></script>
+</body>
+</html>
