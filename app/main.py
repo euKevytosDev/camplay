@@ -2,9 +2,15 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import os
+import secrets
+import subprocess
+import urllib.error
+import urllib.request
 from contextlib import asynccontextmanager
+from datetime import datetime
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -219,6 +225,70 @@ def api_replay_poster(replay_id: int):
     return FileResponse(poster, media_type="image/jpeg")
 
 
+def _upload_token() -> str:
+    return os.getenv("UPLOAD_TOKEN", "").strip()
+
+
+def _save_poster(video_path: Path) -> None:
+    poster = video_path.with_suffix(".jpg")
+    subprocess.run(
+        [
+            "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+            "-ss", "0.4", "-i", str(video_path),
+            "-frames:v", "1", "-q:v", "3", str(poster),
+        ],
+        check=False,
+    )
+
+
+def _publish_clip(path: Path) -> dict | None:
+    url = os.getenv("UPLOAD_URL", "").strip()
+    token = _upload_token()
+    if not url or not token:
+        return None
+    request = urllib.request.Request(
+        url,
+        data=path.read_bytes(),
+        headers={"X-Upload-Token": token, "Content-Type": "video/mp4"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=120) as response:
+            return json.loads(response.read().decode())
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode(errors="replace")[:300]
+        logger.error("Falha ao enviar o lance ao servidor: %s %s", exc.code, detail)
+        return {"ok": False, "error": detail or str(exc.code)}
+    except Exception as exc:
+        logger.exception("Falha ao enviar o lance ao servidor")
+        return {"ok": False, "error": str(exc)}
+
+
+@app.post("/api/lances")
+async def receive_lance(request: Request):
+    """Recebe o vídeo gravado na quadra e publica no site."""
+    expected = _upload_token()
+    sent = request.headers.get("x-upload-token", "")
+    if not expected or not secrets.compare_digest(sent, expected):
+        raise HTTPException(401, "Envio não autorizado.")
+    payload = await request.body()
+    if len(payload) < 1000 or len(payload) > 80 * 1024 * 1024:
+        raise HTTPException(400, "Vídeo inválido.")
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    path = CLIPS_DIR / f"clip_{stamp}.mp4"
+    path.write_bytes(payload)
+    _save_poster(path)
+    replay = store.add_replay(path.name)
+    logger.info("Lance recebido: %s", path.name)
+    return {
+        "ok": True,
+        "file": path.name,
+        "replay_id": replay["id"],
+        "court_slug": replay["court_slug"],
+        "page": f"/#quadra/{replay['court_slug']}/quadra-teste-1",
+    }
+
+
 @app.post("/clip")
 def create_clip():
     """Chamado pela plaquinha quando o botão é apertado."""
@@ -231,6 +301,7 @@ def create_clip():
         raise HTTPException(500, str(exc)) from exc
 
     replay = store.add_replay(path.name)
+    published = _publish_clip(path)
     return {
         "ok": True,
         "file": path.name,
@@ -239,6 +310,7 @@ def create_clip():
         "url": f"/api/replays/{replay['id']}/arquivo/frente",
         "download": f"/api/replays/{replay['id']}/arquivo/frente?download=1",
         "page": f"/#quadra/{replay['court_slug']}",
+        "publicado": published,
     }
 
 
