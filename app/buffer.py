@@ -104,6 +104,8 @@ class VideoBuffer:
             self.rtsp_url,
             "-c",
             "copy",
+            "-flush_packets",
+            "1",
             "-f",
             "segment",
             "-segment_time",
@@ -158,8 +160,11 @@ class VideoBuffer:
         list_file = work / "list.txt"
 
         try:
-            # Copia agora o pedaço que ainda está sendo gravado.
-            # Assim o lance termina no clique, sem os 2 segundos seguintes.
+            # Espera o quadro do clique chegar no arquivo, sem fechar o pedaço de 2s.
+            time.sleep(0.4)
+            segs = self._segments_newest_first()
+            if not segs:
+                raise RuntimeError("Buffer vazio — aguarde alguns segundos com a câmera ligada")
             tail = work / segs[0].name
             tail.write_bytes(segs[0].read_bytes())
             if tail.stat().st_size < 1000 and len(segs) > 1:
@@ -176,7 +181,10 @@ class VideoBuffer:
                 if covered >= seconds:
                     break
                 chosen.append(seg)
-                covered += _probe_duration(seg) or float(self.segment_seconds)
+                piece = _probe_duration(seg)
+                if piece <= 0 or piece > self.segment_seconds + 0.2:
+                    piece = float(self.segment_seconds)
+                covered += piece
             # Sem duração do pedaço aberto, não corta o fim: o fim é o clique.
             if tail_duration <= 0:
                 trim_start = 0.0
