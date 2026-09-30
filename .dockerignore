@@ -1,0 +1,9 @@
+.venv
+.env
+.git
+buffer
+clips
+__pycache__
+*.mp4
+*.ts
+.DS_Store
