@@ -1,8 +1,17 @@
 const app = document.querySelector("#app");
 const accountBtn = document.querySelector("#account-btn");
+const menuAccount = document.querySelector("#menu-account");
+const burger = document.querySelector("#burger");
+const HOME = new Set(["inicio", "quadras", "como", "termos"]);
+const DEMO = [
+  "https://assets.mixkit.co/videos/2918/2918-720.mp4",
+  "https://assets.mixkit.co/videos/42530/42530-720.mp4",
+  "https://assets.mixkit.co/videos/43486/43486-720.mp4",
+];
 
 let me = null;
 let view = "inicio";
+let homeReady = false;
 
 function money(cents) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -32,10 +41,23 @@ async function api(path, options = {}) {
 }
 
 function setActive() {
-  document.querySelectorAll("[data-view]").forEach((link) => {
-    link.classList.toggle("active", link.dataset.view === view);
+  const current = HOME.has(view) ? view : "";
+  document.querySelectorAll("[data-section]").forEach((link) => {
+    link.classList.toggle("active", link.dataset.section === current);
   });
-  accountBtn.textContent = me ? me.name.split(" ")[0] : "Entrar";
+  const label = me ? me.name.split(" ")[0] : "Entrar";
+  accountBtn.textContent = label;
+  menuAccount.textContent = label;
+}
+
+function closeMenu() {
+  document.body.classList.remove("menu-open");
+  burger.setAttribute("aria-expanded", "false");
+  burger.setAttribute("aria-label", "Abrir menu");
+}
+
+function scrollToId(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function shell(title, inner, extra = "") {
@@ -49,42 +71,60 @@ function shell(title, inner, extra = "") {
   setActive();
 }
 
+function demoReel() {
+  const cards = [...DEMO, ...DEMO].map((src) => `
+    <figure class="reel-card">
+      <video autoplay muted loop playsinline preload="metadata" src="${src}"></video>
+      <figcaption>Exemplo</figcaption>
+    </figure>
+  `).join("");
+  return `
+    <div class="reel-wrap">
+      <p class="reel-label">Lances de exemplo, rolando agora</p>
+      <div class="reel"><div class="reel-track">${cards}</div></div>
+    </div>
+  `;
+}
+
 async function renderInicio() {
-  view = "inicio";
   const courts = await api("/api/courts");
-  const chips = courts.length
+  const tiles = courts.length
     ? courts.map((court) => `
-        <a class="chip" href="#quadra/${court.slug}">
-          <span><strong>${court.name}</strong><br><small>${court.city}</small></span>
+        <a class="court-tile" href="#quadra/${court.slug}">
+          <span class="play" aria-hidden="true">▶</span>
+          <span>
+            <strong>${court.name}</strong><br>
+            <small>${court.city}${court.favorite ? " · favorita" : ""}</small>
+          </span>
           <small>${court.replay_count} lance${court.replay_count === 1 ? "" : "s"}</small>
         </a>
       `).join("")
     : `<p class="empty">Nenhuma quadra publicada ainda.</p>`;
 
   app.innerHTML = `
-    <section class="hero">
+    <section class="hero" id="inicio">
       <div>
-        <span class="kicker">Replay da quadra</span>
+        <span class="kicker"><i class="pulse"></i> Replay da quadra</span>
         <h1>O lance passou. <em>O vídeo ficou.</em></h1>
         <p class="lead">Um toque no botão guarda o momento. No celular, o card abre com os ângulos prontos para assistir e baixar.</p>
         <div class="actions">
-          <a class="btn" href="#quadras">Ver quadras</a>
-          <a class="btn ghost" href="#como">Como funciona</a>
+          <a class="btn" href="#quadras" data-section="quadras">Ver quadras</a>
+          <a class="btn ghost" href="#como" data-section="como">Como funciona</a>
         </div>
       </div>
-      <div class="pitch-card">
-        <div class="pitch" role="img" aria-label="Ilustração de uma quadra"></div>
-        <div class="pitch-note">
-          <span><strong>Card do lance</strong><br>Frente e fundo juntos</span>
-          <span>Pronto para baixar</span>
-        </div>
+      <div class="stage">
+        <div class="stage-top"><i></i><em>Exemplo de lance</em></div>
+        <video autoplay muted loop playsinline preload="metadata" src="${DEMO[0]}"></video>
+        <div class="float live"><i class="pulse"></i> Rolando agora</div>
+        <div class="float ready">Pronto para baixar</div>
       </div>
     </section>
+    ${demoReel()}
 
-    <section class="section">
-      <h2>Quadras no CliquePlay</h2>
-      <p class="sub">Escolha onde você jogou e abra os lances salvos.</p>
-      <div class="chips">${chips}</div>
+    <section class="section" id="quadras">
+      <h2>Escolha a quadra</h2>
+      <p class="sub">Toque para abrir os lances. Baixar um vídeo liberado não pede conta.</p>
+      <div class="chips">${tiles}</div>
     </section>
 
     <section class="section">
@@ -97,16 +137,31 @@ async function renderInicio() {
       </div>
     </section>
 
-    <section class="section" id="como-bloco">
+    <section class="section" id="como">
       <h2>Como funciona</h2>
+      <p class="sub">A conta só entra se você quiser favoritar quadras ou pedir um lance reservado.</p>
       <div class="steps">
         <article class="step"><span class="num">01</span><div><h3>Abra a quadra</h3><p>Entre no site e escolha o lugar da partida.</p></div></article>
         <article class="step"><span class="num">02</span><div><h3>Aperte o botão</h3><p>No momento do lance, o toque na quadra pede o vídeo.</p></div></article>
         <article class="step"><span class="num">03</span><div><h3>Baixe e mande</h3><p>O card aparece com os ângulos, prontos para ver, salvar e enviar.</p></div></article>
       </div>
     </section>
+
+    <section class="section" id="termos">
+      <h2>Termos de uso</h2>
+      <p class="sub">Ao usar o site, você concorda com estes pontos. Eles podem ser atualizados conforme o serviço cresce.</p>
+      <div class="terms">
+        <article class="term"><h3>1. O CliquePlay</h3><p>O site mostra replays gravados em quadras parceiras quando alguém aciona o botão. O acesso é pelo navegador do celular ou do computador.</p></article>
+        <article class="term"><h3>2. Uso</h3><p>Dá para assistir, baixar e compartilhar os lances liberados. Não use o material para ofender alguém ou violar direito de imagem.</p></article>
+        <article class="term"><h3>3. Tempo no ar</h3><p>Os vídeos ficam disponíveis por um período. Quem quiser guardar baixa o arquivo. O CliquePlay não promete arquivo eterno.</p></article>
+        <article class="term"><h3>4. Imagem na quadra</h3><p>A gravação acontece na quadra, em ambiente de jogo, com aviso visível. Não filmamos área privada.</p></article>
+        <article class="term"><h3>5. Lance reservado</h3><p>O dono da quadra pode deixar um vídeo bloqueado. Se houver cobrança, o valor é dele. Enquanto o pagamento não estiver ligado, o pedido fica só anotado e o vídeo continua reservado.</p></article>
+        <article class="term"><h3>6. Conta</h3><p>Criar conta é opcional. Ela serve para favoritar quadras e pedir lances reservados.</p></article>
+      </div>
+    </section>
     ${footer()}
   `;
+  homeReady = true;
   setActive();
 }
 
@@ -115,18 +170,15 @@ function footer() {
     <footer class="site-footer">
       <strong>CliquePlay</strong>
       <p>O replay da sua pelada. O vídeo fica um tempo no ar — se quiser guardar, baixe no celular.</p>
+      <nav>
+        <a href="#inicio" data-section="inicio">Início</a>
+        <a href="#quadras" data-section="quadras">Quadras</a>
+        <a href="#como" data-section="como">Como funciona</a>
+        <a href="#termos" data-section="termos">Termos</a>
+      </nav>
       <p>cliqueplay.com.br</p>
     </footer>
   `;
-}
-
-async function renderQuadras() {
-  view = "quadras";
-  const courts = await api("/api/courts");
-  const list = courts.length
-    ? `<div class="court-list">${courts.map(courtCard).join("")}</div>`
-    : `<p class="empty">Assim que a primeira quadra entrar, ela aparece aqui.</p>`;
-  shell("Escolha a quadra", list, `<p class="sub">Toque para ver os lances. Baixar um vídeo liberado não pede conta.</p>`);
 }
 
 function courtCard(court) {
@@ -143,6 +195,7 @@ function courtCard(court) {
 }
 
 async function renderQuadra(slug) {
+  homeReady = false;
   view = "quadras";
   const court = await api(`/api/courts/${slug}`);
   const replays = court.replays.length
@@ -172,12 +225,12 @@ function replayCard(replay) {
   const front = replay.locked
     ? lockedBox(replay)
     : replay.has_front
-      ? `<video controls playsinline preload="metadata" src="/api/replays/${replay.id}/arquivo/frente"></video>`
+      ? `<video class="angle" controls playsinline preload="metadata" src="/api/replays/${replay.id}/arquivo/frente"></video>`
       : `<div class="empty-angle">Ângulo da frente ainda não chegou.</div>`;
   const back = replay.locked
     ? ""
     : replay.has_back
-      ? `<video controls playsinline preload="metadata" src="/api/replays/${replay.id}/arquivo/fundo"></video>`
+      ? `<video class="angle" controls playsinline preload="metadata" src="/api/replays/${replay.id}/arquivo/fundo"></video>`
       : `<div class="empty-angle">O segundo ângulo entra quando a outra câmera estiver ligada.</div>`;
   const actions = replay.locked
     ? `<button class="btn" type="button" data-buy="${replay.id}">Pedir este lance${replay.price_cents ? " · " + money(replay.price_cents) : ""}</button>`
@@ -229,36 +282,8 @@ async function buy(replayId) {
   if (note) note.textContent = result.message;
 }
 
-function renderComo() {
-  view = "como";
-  shell(
-    "Como funciona",
-    `<div class="steps">
-      <article class="step"><span class="num">01</span><div><h3>Abra a quadra</h3><p>Escolha o lugar da partida. Sem conta, já dá para ver e baixar o que estiver liberado.</p></div></article>
-      <article class="step"><span class="num">02</span><div><h3>Aperte o botão</h3><p>O toque na quadra pede os últimos segundos. Os ângulos daquela jogada ficam no mesmo card.</p></div></article>
-      <article class="step"><span class="num">03</span><div><h3>Baixe e mande</h3><p>Assista no celular, salve o arquivo e envie para quem estava no jogo.</p></div></article>
-    </div>`,
-    `<p class="sub">A conta só entra se você quiser favoritar quadras ou pedir um lance que o dono deixou reservado.</p>`
-  );
-}
-
-function renderTermos() {
-  view = "termos";
-  shell(
-    "Termos de uso",
-    `<div class="terms">
-      <article class="term"><h3>1. O CliquePlay</h3><p>O site mostra replays gravados em quadras parceiras quando alguém aciona o botão. O acesso é pelo navegador do celular ou do computador.</p></article>
-      <article class="term"><h3>2. Uso</h3><p>Dá para assistir, baixar e compartilhar os lances liberados. Não use o material para ofender alguém ou violar direito de imagem.</p></article>
-      <article class="term"><h3>3. Tempo no ar</h3><p>Os vídeos ficam disponíveis por um período. Quem quiser guardar baixa o arquivo. O CliquePlay não promete arquivo eterno.</p></article>
-      <article class="term"><h3>4. Imagem na quadra</h3><p>A gravação acontece na quadra, em ambiente de jogo, com aviso visível. Não filmamos área privada.</p></article>
-      <article class="term"><h3>5. Lance reservado</h3><p>O dono da quadra pode deixar um vídeo bloqueado. Se houver cobrança, o valor é dele. Enquanto o pagamento não estiver ligado, o pedido fica só anotado e o vídeo continua reservado.</p></article>
-      <article class="term"><h3>6. Conta</h3><p>Criar conta é opcional. Ela serve para favoritar quadras e pedir lances reservados. Podemos recusar uso que quebre estes termos.</p></article>
-    </div>`,
-    `<p class="sub">Ao usar o site, você concorda com estes pontos. Eles podem ser atualizados conforme o serviço cresce.</p>`
-  );
-}
-
 function renderConta() {
+  homeReady = false;
   view = "conta";
   if (me) {
     renderContaLogada();
@@ -346,33 +371,60 @@ async function renderContaLogada() {
     await api("/api/sair", { method: "POST" });
     me = null;
     location.hash = "#inicio";
-    renderInicio();
   };
+}
+
+async function showHome(section) {
+  closeMenu();
+  if (!homeReady) await renderInicio();
+  view = section;
+  setActive();
+  scrollToId(section);
 }
 
 async function route() {
   const hash = location.hash.replace("#", "") || "inicio";
+  closeMenu();
   try {
     if (hash.startsWith("quadra/")) {
       await renderQuadra(decodeURIComponent(hash.slice("quadra/".length)));
-    } else if (hash === "quadras") {
-      await renderQuadras();
-    } else if (hash === "como") {
-      renderComo();
-    } else if (hash === "termos") {
-      renderTermos();
     } else if (hash === "conta") {
       renderConta();
+    } else if (HOME.has(hash)) {
+      await showHome(hash);
     } else {
-      await renderInicio();
+      await showHome("inicio");
     }
   } catch (err) {
+    homeReady = false;
     shell("Algo travou", `<p class="error">${err.message}</p>`);
   }
 }
 
-accountBtn.addEventListener("click", () => {
+function openAccount() {
+  closeMenu();
   location.hash = "#conta";
+}
+
+accountBtn.addEventListener("click", openAccount);
+menuAccount.addEventListener("click", openAccount);
+burger.addEventListener("click", () => {
+  const open = document.body.classList.toggle("menu-open");
+  burger.setAttribute("aria-expanded", open ? "true" : "false");
+  burger.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu");
+});
+document.addEventListener("click", (event) => {
+  const link = event.target.closest("[data-section]");
+  if (!link) return;
+  event.preventDefault();
+  const id = link.dataset.section;
+  const current = location.hash.replace("#", "") || "inicio";
+  if (homeReady && HOME.has(current) && current === id) {
+    closeMenu();
+    scrollToId(id);
+    return;
+  }
+  location.hash = "#" + id;
 });
 window.addEventListener("hashchange", route);
 

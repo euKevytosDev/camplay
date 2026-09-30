@@ -9,28 +9,32 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=1">
+  <link rel="stylesheet" href="/static/styles.css?v=3">
 </head>
 <body>
   <header class="topbar">
-    <a class="logo" href="#inicio" data-view="inicio">Clique<span>Play</span></a>
+    <a class="logo" href="#inicio" data-section="inicio">Clique<span>Play</span></a>
     <nav class="desk-nav">
-      <a href="#inicio" data-view="inicio">Início</a>
-      <a href="#quadras" data-view="quadras">Quadras</a>
-      <a href="#como" data-view="como">Como funciona</a>
-      <a href="#termos" data-view="termos">Termos</a>
+      <a href="#inicio" data-section="inicio">Início</a>
+      <a href="#quadras" data-section="quadras">Quadras</a>
+      <a href="#como" data-section="como">Como funciona</a>
+      <a href="#termos" data-section="termos">Termos</a>
     </nav>
     <button class="account-btn" id="account-btn" type="button">Entrar</button>
+    <button class="burger" id="burger" type="button" aria-label="Abrir menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </header>
+  <nav class="mobile-menu" id="mobile-menu" aria-label="Menu">
+    <a href="#inicio" data-section="inicio">Início</a>
+    <a href="#quadras" data-section="quadras">Quadras</a>
+    <a href="#como" data-section="como">Como funciona</a>
+    <a href="#termos" data-section="termos">Termos</a>
+    <button type="button" id="menu-account">Entrar</button>
+  </nav>
 
   <main id="app"></main>
 
-  <nav class="tabbar" aria-label="Navegação">
-    <a href="#inicio" data-view="inicio">Início</a>
-    <a href="#quadras" data-view="quadras">Quadras</a>
-    <a href="#conta" data-view="conta">Conta</a>
-  </nav>
-
-  <script src="/static/app.js?v=1"></script>
+  <script src="/static/app.js?v=3"></script>
 </body>
 </html>
