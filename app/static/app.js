@@ -92,11 +92,15 @@ async function renderInicio() {
     ? courts.map((court) => `
         <a class="court-tile" href="#quadra/${court.slug}">
           <span class="play" aria-hidden="true">▶</span>
-          <span>
-            <strong>${court.name}</strong><br>
+          <span class="court-copy">
+            <strong>${court.name}</strong>
             <small>${court.city}${court.favorite ? " · favorita" : ""}</small>
           </span>
-          <small>${court.replay_count} lance${court.replay_count === 1 ? "" : "s"}</small>
+          <span class="court-meta">
+            <b>${court.replay_count}</b>
+            <small>lance${court.replay_count === 1 ? "" : "s"}</small>
+          </span>
+          <span class="court-go" aria-hidden="true">→</span>
         </a>
       `).join("")
     : `<p class="empty">Nenhuma quadra publicada ainda.</p>`;
@@ -122,41 +126,53 @@ async function renderInicio() {
     ${demoReel()}
 
     <section class="section" id="quadras">
-      <h2>Escolha a quadra</h2>
-      <p class="sub">Toque para abrir os lances. Baixar um vídeo liberado não pede conta.</p>
+      <div class="section-head">
+        <span class="kicker">Quadras</span>
+        <h2>Escolha a quadra</h2>
+        <p class="sub">Toque para abrir os lances. Baixar um vídeo liberado não pede conta.</p>
+      </div>
       <div class="chips">${tiles}</div>
     </section>
 
-    <section class="section">
-      <h2>Feito para quem está em campo</h2>
+    <section class="section" id="campo">
+      <div class="section-head">
+        <span class="kicker">Na prática</span>
+        <h2>Feito para quem está em campo</h2>
+      </div>
       <div class="cards">
-        <article class="card"><h3>Um toque, um card</h3><p>O botão guarda o lance. Os ângulos daquela jogada ficam no mesmo lugar.</p></article>
-        <article class="card"><h3>Baixa sem conta</h3><p>Dá para assistir e salvar o vídeo direto pelo celular.</p></article>
-        <article class="card"><h3>Quadra favorita</h3><p>Quem cria conta marca as quadras e acha o próximo jogo mais rápido.</p></article>
-        <article class="card"><h3>Lance reservado</h3><p>A quadra pode cobrar um vídeo. O valor é do dono da quadra.</p></article>
+        <article class="card feature"><span class="feature-index">01</span><h3>Um toque, um card</h3><p>O botão guarda o lance. Os ângulos daquela jogada ficam no mesmo lugar.</p></article>
+        <article class="card feature"><span class="feature-index">02</span><h3>Baixa sem conta</h3><p>Dá para assistir e salvar o vídeo direto pelo celular.</p></article>
+        <article class="card feature"><span class="feature-index">03</span><h3>Quadra favorita</h3><p>Quem cria conta marca as quadras e acha o próximo jogo mais rápido.</p></article>
+        <article class="card feature"><span class="feature-index">04</span><h3>Lance reservado</h3><p>A quadra pode cobrar um vídeo. O valor é do dono da quadra.</p></article>
       </div>
     </section>
 
     <section class="section" id="como">
-      <h2>Como funciona</h2>
-      <p class="sub">A conta só entra se você quiser favoritar quadras ou pedir um lance reservado.</p>
+      <div class="section-head">
+        <span class="kicker">Passo a passo</span>
+        <h2>Como funciona</h2>
+        <p class="sub">A conta só entra se você quiser favoritar quadras ou pedir um lance reservado.</p>
+      </div>
       <div class="steps">
-        <article class="step"><span class="num">01</span><div><h3>Abra a quadra</h3><p>Entre no site e escolha o lugar da partida.</p></div></article>
-        <article class="step"><span class="num">02</span><div><h3>Aperte o botão</h3><p>No momento do lance, o toque na quadra pede o vídeo.</p></div></article>
-        <article class="step"><span class="num">03</span><div><h3>Baixe e mande</h3><p>O card aparece com os ângulos, prontos para ver, salvar e enviar.</p></div></article>
+        <article class="step"><span class="num">01</span><h3>Abra a quadra</h3><p>Entre no site e escolha o lugar da partida.</p></article>
+        <article class="step"><span class="num">02</span><h3>Aperte o botão</h3><p>No momento do lance, o toque na quadra pede o vídeo.</p></article>
+        <article class="step"><span class="num">03</span><h3>Baixe e mande</h3><p>O card aparece com os ângulos, prontos para ver, salvar e enviar.</p></article>
       </div>
     </section>
 
     <section class="section" id="termos">
-      <h2>Termos de uso</h2>
-      <p class="sub">Ao usar o site, você concorda com estes pontos. Eles podem ser atualizados conforme o serviço cresce.</p>
+      <div class="section-head">
+        <span class="kicker">Transparência</span>
+        <h2>Termos de uso</h2>
+        <p class="sub">Ao usar o site, você concorda com estes pontos. Eles podem ser atualizados conforme o serviço cresce.</p>
+      </div>
       <div class="terms">
-        <article class="term"><h3>1. O CliquePlay</h3><p>O site mostra replays gravados em quadras parceiras quando alguém aciona o botão. O acesso é pelo navegador do celular ou do computador.</p></article>
-        <article class="term"><h3>2. Uso</h3><p>Dá para assistir, baixar e compartilhar os lances liberados. Não use o material para ofender alguém ou violar direito de imagem.</p></article>
-        <article class="term"><h3>3. Tempo no ar</h3><p>Os vídeos ficam disponíveis por um período. Quem quiser guardar baixa o arquivo. O CliquePlay não promete arquivo eterno.</p></article>
-        <article class="term"><h3>4. Imagem na quadra</h3><p>A gravação acontece na quadra, em ambiente de jogo, com aviso visível. Não filmamos área privada.</p></article>
-        <article class="term"><h3>5. Lance reservado</h3><p>O dono da quadra pode deixar um vídeo bloqueado. Se houver cobrança, o valor é dele. Enquanto o pagamento não estiver ligado, o pedido fica só anotado e o vídeo continua reservado.</p></article>
-        <article class="term"><h3>6. Conta</h3><p>Criar conta é opcional. Ela serve para favoritar quadras e pedir lances reservados.</p></article>
+        <article class="term"><h3><span>01</span> O CliquePlay</h3><p>O site mostra replays gravados em quadras parceiras quando alguém aciona o botão. O acesso é pelo navegador do celular ou do computador.</p></article>
+        <article class="term"><h3><span>02</span> Uso</h3><p>Dá para assistir, baixar e compartilhar os lances liberados. Não use o material para ofender alguém ou violar direito de imagem.</p></article>
+        <article class="term"><h3><span>03</span> Tempo no ar</h3><p>Os vídeos ficam disponíveis por um período. Quem quiser guardar baixa o arquivo. O CliquePlay não promete arquivo eterno.</p></article>
+        <article class="term"><h3><span>04</span> Imagem na quadra</h3><p>A gravação acontece na quadra, em ambiente de jogo, com aviso visível. Não filmamos área privada.</p></article>
+        <article class="term"><h3><span>05</span> Lance reservado</h3><p>O dono da quadra pode deixar um vídeo bloqueado. Se houver cobrança, o valor é dele. Enquanto o pagamento não estiver ligado, o pedido fica só anotado e o vídeo continua reservado.</p></article>
+        <article class="term"><h3><span>06</span> Conta</h3><p>Criar conta é opcional. Ela serve para favoritar quadras e pedir lances reservados.</p></article>
       </div>
     </section>
     ${footer()}
