@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 214" fill="none" role="img" aria-label="CliquePlay">
+  <rect x="8" y="8" width="144" height="198" rx="34" stroke="#C6F135" stroke-width="10"/>
+  <circle cx="80" cy="74" r="30" stroke="#C6F135" stroke-width="8"/>
+  <path d="M72 58.5 L98 74 L72 89.5 Z" fill="#C6F135"/>
+  <text x="80" y="142" text-anchor="middle" fill="#C6F135" font-family="Arial Black, Impact, sans-serif" font-size="26" letter-spacing="0.5">CLIQUE</text>
+  <text x="80" y="176" text-anchor="middle" fill="#C6F135" font-family="Arial Black, Impact, sans-serif" font-size="28" letter-spacing="1.5">PLAY</text>
+</svg>

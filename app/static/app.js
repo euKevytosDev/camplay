@@ -168,7 +168,7 @@ async function renderInicio() {
 function footer() {
   return `
     <footer class="site-footer">
-      <strong>CliquePlay</strong>
+      <img class="footer-logo" src="/static/logo.svg?v=4" alt="CliquePlay" width="92" height="123">
       <p>O replay da sua pelada. O vídeo fica um tempo no ar — se quiser guardar, baixe no celular.</p>
       <nav>
         <a href="#inicio" data-section="inicio">Início</a>
