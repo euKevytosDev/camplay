@@ -13,6 +13,52 @@ logger = logging.getLogger(__name__)
 LOGO_PATH = Path(__file__).resolve().parent / "static" / "logo-watermark.png"
 
 
+def _probe_duration(path: Path) -> float:
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration",
+            "-of",
+            "csv=p=0",
+            str(path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    try:
+        value = float(result.stdout.strip())
+    except ValueError:
+        return 0.0
+    if value <= 0 or value > 3600:
+        return 0.0
+    return value
+
+
+def _has_audio(path: Path) -> bool:
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-select_streams",
+            "a",
+            "-show_entries",
+            "stream=index",
+            "-of",
+            "csv=p=0",
+            str(path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return bool(result.stdout.strip())
+
+
 class VideoBuffer:
     def __init__(
         self,
@@ -101,21 +147,53 @@ class VideoBuffer:
 
     def save_clip(self, seconds: int | None = None) -> Path:
         seconds = seconds or self.clip_seconds
-        needed = max(1, (seconds // self.segment_seconds) + 1)
         segs = self._segments_newest_first()
         if not segs:
             raise RuntimeError("Buffer vazio — aguarde alguns segundos com a câmera ligada")
 
-        selected = list(reversed(segs[:needed]))
         stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         out = self.clips_dir / f"clip_{stamp}.mp4"
-        list_file = self.clips_dir / f"concat_{stamp}.txt"
+        work = self.clips_dir / f"parts_{stamp}"
+        work.mkdir(parents=True, exist_ok=True)
+        list_file = work / "list.txt"
 
-        list_file.write_text(
-            "".join(f"file '{s.resolve()}'\n" for s in selected),
-            encoding="utf-8",
-        )
         try:
+            # Copia agora o pedaço que ainda está sendo gravado.
+            # Assim o lance termina no clique, sem os 2 segundos seguintes.
+            tail = work / segs[0].name
+            tail.write_bytes(segs[0].read_bytes())
+            if tail.stat().st_size < 1000 and len(segs) > 1:
+                tail.unlink()
+                tail = segs[1]
+                older = segs[2:]
+            else:
+                older = segs[1:]
+
+            tail_duration = _probe_duration(tail)
+            covered = tail_duration
+            chosen: list[Path] = []
+            for seg in older:
+                if covered >= seconds:
+                    break
+                chosen.append(seg)
+                covered += _probe_duration(seg) or float(self.segment_seconds)
+            # Sem duração do pedaço aberto, não corta o fim: o fim é o clique.
+            if tail_duration <= 0:
+                trim_start = 0.0
+                trim_duration = max(seconds, int(covered) + self.segment_seconds)
+            else:
+                trim_start = max(0.0, covered - float(seconds))
+                trim_duration = seconds
+
+            ordered = list(reversed(chosen)) + [tail]
+            list_file.write_text(
+                "".join(f"file '{s.resolve()}'\n" for s in ordered),
+                encoding="utf-8",
+            )
+            video_trim = (
+                f"trim=start={trim_start:.3f}:duration={trim_duration},"
+                "setpts=PTS-STARTPTS"
+            )
             cmd = [
                 "ffmpeg",
                 "-hide_banner",
@@ -130,22 +208,28 @@ class VideoBuffer:
                 str(list_file),
             ]
             if LOGO_PATH.is_file():
-                cmd += [
-                    "-i",
-                    str(LOGO_PATH),
-                    "-filter_complex",
-                    "[1:v]scale=-1:168,format=rgba,colorchannelmixer=rr=0:gg=0:bb=0:aa=0.55[sh];"
-                    "[1:v]scale=-1:168[wm];"
-                    "[0:v][sh]overlay=28:28[base];"
+                cmd += ["-i", str(LOGO_PATH)]
+                filters = [
+                    f"[0:v]{video_trim}[src]",
+                    "[1:v]scale=-1:168,format=rgba,colorchannelmixer=rr=0:gg=0:bb=0:aa=0.55[sh]",
+                    "[1:v]scale=-1:168[wm]",
+                    "[src][sh]overlay=28:28[base]",
                     "[base][wm]overlay=24:24:format=auto[v]",
-                    "-map",
-                    "[v]",
                 ]
             else:
-                cmd += ["-map", "0:v:0"]
+                filters = [f"[0:v]{video_trim}[v]"]
+            maps = ["-map", "[v]"]
+            if _has_audio(ordered[0]):
+                audio_trim = (
+                    f"atrim=start={trim_start:.3f}:duration={trim_duration},"
+                    "asetpts=PTS-STARTPTS"
+                )
+                filters.append(f"[0:a]{audio_trim}[a]")
+                maps += ["-map", "[a]"]
             cmd += [
-                "-map",
-                "0:a:0?",
+                "-filter_complex",
+                ";".join(filters),
+                *maps,
                 "-c:v",
                 "libx264",
                 "-preset",
@@ -182,7 +266,7 @@ class VideoBuffer:
                 check=False,
             )
         finally:
-            list_file.unlink(missing_ok=True)
+            shutil.rmtree(work, ignore_errors=True)
 
         if not out.exists() or out.stat().st_size < 1000:
             raise RuntimeError("Falha ao gerar o clip")
