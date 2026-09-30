@@ -38,6 +38,44 @@ def _probe_duration(path: Path) -> float:
     return value
 
 
+def _probe_video_end(path: Path) -> float:
+    """Fim real da imagem, pelo último quadro, não pela soma dos pedaços."""
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-select_streams",
+            "v:0",
+            "-show_entries",
+            "packet=pts_time,duration_time",
+            "-of",
+            "csv=p=0",
+            str(path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    end = 0.0
+    for line in result.stdout.splitlines():
+        parts = line.split(",")
+        try:
+            pts = float(parts[0])
+        except (ValueError, IndexError):
+            continue
+        frame = 0.0
+        if len(parts) > 1 and parts[1] not in ("", "N/A"):
+            try:
+                frame = float(parts[1])
+            except ValueError:
+                frame = 0.0
+        end = max(end, pts + max(frame, 0.0))
+    if end > 0:
+        return end
+    return _probe_duration(path)
+
+
 def _has_audio(path: Path) -> bool:
     result = subprocess.run(
         [
@@ -176,30 +214,54 @@ class VideoBuffer:
 
             tail_duration = _probe_duration(tail)
             covered = tail_duration
+            # Um pedaço a mais no passado, para o corte de 30s não ficar curto.
+            target = float(seconds) + self.segment_seconds
             chosen: list[Path] = []
             for seg in older:
-                if covered >= seconds:
+                if covered >= target:
                     break
                 chosen.append(seg)
                 piece = _probe_duration(seg)
                 if piece <= 0 or piece > self.segment_seconds + 0.2:
                     piece = float(self.segment_seconds)
                 covered += piece
-            # Sem duração do pedaço aberto, não corta o fim: o fim é o clique.
-            if tail_duration <= 0:
-                trim_start = 0.0
-                trim_duration = max(seconds, int(covered) + self.segment_seconds)
-            else:
-                trim_start = max(0.0, covered - float(seconds))
-                trim_duration = seconds
 
             ordered = list(reversed(chosen)) + [tail]
             list_file.write_text(
                 "".join(f"file '{s.resolve()}'\n" for s in ordered),
                 encoding="utf-8",
             )
+            joined = work / "joined.mp4"
+            subprocess.run(
+                [
+                    "ffmpeg",
+                    "-hide_banner",
+                    "-loglevel",
+                    "error",
+                    "-y",
+                    "-f",
+                    "concat",
+                    "-safe",
+                    "0",
+                    "-i",
+                    str(list_file),
+                    "-c",
+                    "copy",
+                    str(joined),
+                ],
+                check=True,
+            )
+            # O fim do arquivo é o clique. O segundo que falta sai do começo.
+            real_end = _probe_video_end(joined)
+            if real_end <= 0:
+                trim_start = 0.0
+                trim_end = float(seconds)
+            else:
+                # 0,05s a mais no começo, para o contador não arredondar para 29.
+                trim_start = max(0.0, real_end - float(seconds) - 0.05)
+                trim_end = real_end
             video_trim = (
-                f"trim=start={trim_start:.3f}:duration={trim_duration},"
+                f"trim=start={trim_start:.3f}:end={trim_end:.3f},"
                 "setpts=PTS-STARTPTS"
             )
             cmd = [
@@ -208,12 +270,8 @@ class VideoBuffer:
                 "-loglevel",
                 "error",
                 "-y",
-                "-f",
-                "concat",
-                "-safe",
-                "0",
                 "-i",
-                str(list_file),
+                str(joined),
             ]
             if LOGO_PATH.is_file():
                 cmd += ["-i", str(LOGO_PATH)]
@@ -227,9 +285,9 @@ class VideoBuffer:
             else:
                 filters = [f"[0:v]{video_trim}[v]"]
             maps = ["-map", "[v]"]
-            if _has_audio(ordered[0]):
+            if _has_audio(joined):
                 audio_trim = (
-                    f"atrim=start={trim_start:.3f}:duration={trim_duration},"
+                    f"atrim=start={trim_start:.3f}:end={trim_end:.3f},"
                     "asetpts=PTS-STARTPTS"
                 )
                 filters.append(f"[0:a]{audio_trim}[a]")
