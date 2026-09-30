@@ -8,6 +8,7 @@ import secrets
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = Path(os.getenv("DATABASE_PATH", str(ROOT / "data" / "cliqueplay.db")))
@@ -55,7 +56,16 @@ CREATE TABLE IF NOT EXISTS purchases (
     status TEXT NOT NULL,
     created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS quadras (
+    id INTEGER PRIMARY KEY,
+    court_id INTEGER NOT NULL,
+    slug TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL
+);
 """
+
+TZ = ZoneInfo("America/Sao_Paulo")
+WEEKDAYS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
 
 
 def _now() -> str:
@@ -73,6 +83,9 @@ def connect() -> sqlite3.Connection:
 def init_db() -> None:
     with connect() as conn:
         conn.executescript(_SCHEMA)
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(replays)")}
+        if "quadra_id" not in columns:
+            conn.execute("ALTER TABLE replays ADD COLUMN quadra_id INTEGER")
         conn.execute(
             """
             INSERT INTO courts (slug, name, city, about)
@@ -86,6 +99,34 @@ def init_db() -> None:
                 "Primeira quadra, usada para testar a câmera e o botão.",
             ),
         )
+        courts = conn.execute("SELECT id, slug FROM courts").fetchall()
+        for court in courts:
+            _ensure_quadra(conn, court["id"], court["slug"])
+        conn.execute(
+            """
+            UPDATE replays
+            SET quadra_id = (
+                SELECT quadras.id FROM quadras
+                WHERE quadras.court_id = replays.court_id
+                ORDER BY quadras.id LIMIT 1
+            )
+            WHERE quadra_id IS NULL
+            """
+        )
+
+
+def _ensure_quadra(conn: sqlite3.Connection, court_id: int, court_slug: str) -> int:
+    found = conn.execute(
+        "SELECT id FROM quadras WHERE court_id = ? ORDER BY id LIMIT 1",
+        (court_id,),
+    ).fetchone()
+    if found:
+        return found["id"]
+    cur = conn.execute(
+        "INSERT INTO quadras (court_id, slug, name) VALUES (?, ?, ?)",
+        (court_id, f"{court_slug}-1", "Quadra 1"),
+    )
+    return int(cur.lastrowid)
 
 
 def _hash_password(password: str, salt: bytes | None = None) -> str:
@@ -200,12 +241,97 @@ def get_court(slug: str, user_id: int | None = None) -> dict | None:
         if row is None:
             return None
         court = _court_public(row)
+        court["quadras"] = _quadras_of(conn, row["id"])
         replays = conn.execute(
             "SELECT * FROM replays WHERE court_id = ? ORDER BY id DESC",
             (row["id"],),
         ).fetchall()
         court["replays"] = [_replay_public(item) for item in replays]
         return court
+
+
+def get_quadra(arena_slug: str, quadra_slug: str) -> dict | None:
+    with connect() as conn:
+        arena = conn.execute("SELECT * FROM courts WHERE slug = ?", (arena_slug,)).fetchone()
+        if arena is None:
+            return None
+        quadra = conn.execute(
+            "SELECT * FROM quadras WHERE court_id = ? AND slug = ?",
+            (arena["id"], quadra_slug),
+        ).fetchone()
+        if quadra is None:
+            return None
+        replays = conn.execute(
+            "SELECT * FROM replays WHERE quadra_id = ? ORDER BY created_at DESC",
+            (quadra["id"],),
+        ).fetchall()
+        count = conn.execute(
+            "SELECT COUNT(*) AS n FROM replays WHERE quadra_id = ?",
+            (quadra["id"],),
+        ).fetchone()["n"]
+    return {
+        "arena": {
+            "slug": arena["slug"],
+            "name": arena["name"],
+            "city": arena["city"],
+            "about": arena["about"],
+        },
+        "quadra": {"slug": quadra["slug"], "name": quadra["name"], "replay_count": count},
+        "days": _days(replays),
+    }
+
+
+def _quadras_of(conn: sqlite3.Connection, court_id: int) -> list[dict]:
+    rows = conn.execute(
+        """
+        SELECT quadras.*,
+               (SELECT COUNT(*) FROM replays WHERE replays.quadra_id = quadras.id) AS replay_count
+        FROM quadras
+        WHERE court_id = ?
+        ORDER BY quadras.id
+        """,
+        (court_id,),
+    ).fetchall()
+    return [
+        {"slug": row["slug"], "name": row["name"], "replay_count": row["replay_count"]}
+        for row in rows
+    ]
+
+
+def _days(replays: list[sqlite3.Row]) -> list[dict]:
+    buckets: dict[str, dict[int, list[dict]]] = {}
+    for replay in replays:
+        moment = datetime.fromisoformat(replay["created_at"]).astimezone(TZ)
+        day_key = moment.date().isoformat()
+        hour = moment.hour
+        buckets.setdefault(day_key, {}).setdefault(hour, []).append(
+            {
+                **_replay_public(replay),
+                "time_label": moment.strftime("%H:%M"),
+            }
+        )
+    today = datetime.now(TZ).date()
+    days = []
+    for day_key in sorted(set(buckets) | {today.isoformat()}):
+        day = datetime.fromisoformat(day_key).date()
+        if day > today:
+            continue
+        if day != today and day_key not in buckets:
+            continue
+        hours = [
+            {"hour": hour, "label": f"{hour:02d}:00", "replays": buckets[day_key][hour]}
+            for hour in sorted(buckets.get(day_key, {}))
+        ]
+        days.append(
+            {
+                "date": day_key,
+                "is_today": day == today,
+                "label": "Hoje" if day == today else day.strftime("%d/%m"),
+                "weekday": WEEKDAYS[day.weekday()],
+                "hours": hours,
+            }
+        )
+    return days
 
 
 def _court_public(row: sqlite3.Row) -> dict:
@@ -323,12 +449,13 @@ def add_replay(front_file: str, back_file: str | None = None, slug: str | None =
         court = conn.execute("SELECT * FROM courts WHERE slug = ?", (slug,)).fetchone()
         if court is None:
             raise LookupError("Quadra não encontrada.")
+        quadra_id = _ensure_quadra(conn, court["id"], court["slug"])
         cur = conn.execute(
             """
-            INSERT INTO replays (court_id, created_at, front_file, back_file, locked, price_cents)
-            VALUES (?, ?, ?, ?, 0, 0)
+            INSERT INTO replays (court_id, quadra_id, created_at, front_file, back_file, locked, price_cents)
+            VALUES (?, ?, ?, ?, ?, 0, 0)
             """,
-            (court["id"], _now(), front_file, back_file),
+            (court["id"], quadra_id, _now(), front_file, back_file),
         )
         replay_id = cur.lastrowid
     return {"id": replay_id, "court_slug": slug, "locked": False}

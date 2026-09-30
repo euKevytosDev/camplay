@@ -129,7 +129,7 @@ async function renderInicio() {
       <div class="section-head">
         <span class="kicker">Quadras</span>
         <h2>Escolha a quadra</h2>
-        <p class="sub">Toque para abrir os lances. Baixar um vídeo liberado não pede conta.</p>
+        <p class="sub">Toque no lugar. Dentro, escolha a quadra, o dia e o horário do lance.</p>
       </div>
       <div class="chips">${tiles}</div>
     </section>
@@ -211,57 +211,135 @@ function courtCard(court) {
 }
 
 async function renderQuadra(slug) {
+  const parts = slug.split("/").filter(Boolean);
+  if (parts.length >= 2) {
+    await renderHorarios(decodeURIComponent(parts[0]), decodeURIComponent(parts[1]));
+    return;
+  }
+  await renderArena(decodeURIComponent(parts[0] || slug));
+}
+
+async function renderArena(slug) {
   homeReady = false;
   view = "quadras";
   const court = await api(`/api/courts/${slug}`);
-  const replays = court.replays.length
-    ? court.replays.map(replayCard).join("")
-    : `<p class="empty">Nenhum lance ainda. Quando alguém apertar o botão nesta quadra, o card aparece aqui.</p>`;
-  const favLabel = court.favorite ? "Remover dos favoritos" : "Favoritar quadra";
+  const favLabel = court.favorite ? "Remover dos favoritos" : "Favoritar";
+  const quadras = (court.quadras || []).map((quadra) => `
+    <a class="court-tile quadra-pick" href="#quadra/${court.slug}/${quadra.slug}">
+      <span class="play" aria-hidden="true">▶</span>
+      <span class="court-copy">
+        <strong>${quadra.name}</strong>
+        <small>Assistir replay${quadra.replay_count ? ` · ${quadra.replay_count} lance${quadra.replay_count === 1 ? "" : "s"}` : ""}</small>
+      </span>
+      <span class="court-go" aria-hidden="true">→</span>
+    </a>
+  `).join("") || `<p class="empty">Nenhuma quadra neste lugar ainda.</p>`;
   app.innerHTML = `
-    <section class="section" style="margin-top:8px">
+    <section class="section arena" style="margin-top:8px">
       <p class="kicker">${court.city}</p>
       <h2>${court.name}</h2>
-      <p class="sub">${court.about || "Lances salvos pelo botão da quadra."}</p>
+      <p class="sub">${court.about || "Escolha a quadra e veja os lances do botão."}</p>
+      <p class="pick-label">Escolha sua quadra</p>
+      <div class="quadra-grid">${quadras}</div>
       <div class="actions">
         <button class="btn" id="fav-btn" type="button">${favLabel}</button>
         <a class="btn ghost" href="#quadras">Todas as quadras</a>
       </div>
-      <div class="chips" style="margin-top:16px">${replays}</div>
     </section>
   `;
   document.querySelector("#fav-btn").addEventListener("click", () => toggleFavorite(court));
-  document.querySelectorAll("[data-buy]").forEach((button) => {
-    button.addEventListener("click", () => buy(button.dataset.buy));
-  });
   setActive();
 }
 
-function replayCard(replay) {
-  const front = replay.locked
-    ? lockedBox(replay)
-    : replay.has_front
-      ? `<video class="angle" controls playsinline preload="metadata" src="/api/replays/${replay.id}/arquivo/frente"></video>`
-      : `<div class="empty-angle">Ângulo da frente ainda não chegou.</div>`;
-  const back = replay.locked
-    ? ""
-    : replay.has_back
-      ? `<video class="angle" controls playsinline preload="metadata" src="/api/replays/${replay.id}/arquivo/fundo"></video>`
-      : `<div class="empty-angle">O segundo ângulo entra quando a outra câmera estiver ligada.</div>`;
-  const actions = replay.locked
-    ? `<button class="btn" type="button" data-buy="${replay.id}">Pedir este lance${replay.price_cents ? " · " + money(replay.price_cents) : ""}</button>`
-    : `
-        ${replay.has_front ? `<a class="btn" href="/api/replays/${replay.id}/arquivo/frente?download=1">Baixar frente</a>` : ""}
-        ${replay.has_back ? `<a class="btn ghost" href="/api/replays/${replay.id}/arquivo/fundo?download=1">Baixar fundo</a>` : ""}
-      `;
+async function renderHorarios(arenaSlug, quadraSlug) {
+  homeReady = false;
+  view = "quadras";
+  const data = await api(`/api/courts/${arenaSlug}/quadras/${quadraSlug}`);
+  const today = data.days.find((day) => day.is_today) || data.days[data.days.length - 1];
+  let dayKey = today ? today.date : "";
+  let hourKey = null;
+
+  function paint() {
+    const day = data.days.find((item) => item.date === dayKey) || data.days[0];
+    if (!day) return;
+    if (hourKey == null || !day.hours.some((hour) => hour.hour === hourKey)) {
+      hourKey = day.hours.length ? day.hours[day.hours.length - 1].hour : null;
+    }
+    const days = data.days.map((item) => `
+      <button class="day-btn ${item.date === day.date ? "on" : ""}" type="button" data-day="${item.date}">
+        <strong>${item.label}</strong>
+        <small>${item.weekday}</small>
+      </button>
+    `).join("");
+    const hours = day.hours.map((hour) => `
+      <button class="hour-btn ${hour.hour === hourKey ? "on" : ""}" type="button" data-hour="${hour.hour}">${hour.label}</button>
+    `).join("");
+    const selected = day.hours.find((hour) => hour.hour === hourKey);
+    const shots = selected
+      ? `<div class="shot-grid">${selected.replays.map(shotCard).join("")}</div>`
+      : `<p class="empty-slot">Nenhum horário disponível neste dia.</p><p class="empty-hint">Selecione um horário para ver os replays.</p>`;
+    app.innerHTML = `
+      <section class="section arena" style="margin-top:8px">
+        <p class="kicker">${data.quadra.name}</p>
+        <h2>${data.arena.name}</h2>
+        <p class="sub">Escolha o dia e o horário. Só aparece hora em que alguém apertou o botão.</p>
+        <p class="pick-label">Selecione dia e horário</p>
+        <div class="day-row">${days}</div>
+        <div class="hour-row">${hours}</div>
+        ${shots}
+        <div class="actions">
+          <a class="btn ghost" href="#quadra/${data.arena.slug}">Trocar quadra</a>
+        </div>
+      </section>
+    `;
+    document.querySelectorAll("[data-day]").forEach((button) => {
+      button.onclick = () => {
+        dayKey = button.dataset.day;
+        hourKey = null;
+        paint();
+      };
+    });
+    document.querySelectorAll("[data-hour]").forEach((button) => {
+      button.onclick = () => {
+        hourKey = Number(button.dataset.hour);
+        paint();
+      };
+    });
+    document.querySelectorAll("[data-buy]").forEach((button) => {
+      button.addEventListener("click", () => buy(button.dataset.buy));
+    });
+    setActive();
+  }
+
+  paint();
+}
+
+function shotCard(replay) {
+  if (replay.locked) {
+    return `
+      <article class="shot">
+        ${lockedBox(replay)}
+        <button class="btn shot-download" type="button" data-buy="${replay.id}">Pedir este lance${replay.price_cents ? " · " + money(replay.price_cents) : ""}</button>
+      </article>
+    `;
+  }
+  const video = replay.has_front
+    ? `<video controls playsinline preload="metadata" poster="/api/replays/${replay.id}/capa" src="/api/replays/${replay.id}/arquivo/frente"></video>`
+    : `<div class="empty-angle">Vídeo ainda não chegou.</div>`;
+  const download = replay.has_front
+    ? `<a class="shot-download" href="/api/replays/${replay.id}/arquivo/frente?download=1">↓ Baixar</a>`
+    : "";
+  const back = replay.has_back
+    ? `<a class="shot-download" href="/api/replays/${replay.id}/arquivo/fundo?download=1">↓ Baixar fundo</a>`
+    : "";
   return `
-    <article class="replay">
-      <header>
-        <strong>${when(replay.created_at)}</strong>
-        <span class="tag ${replay.locked ? "warn" : ""}">${replay.locked ? "Reservado pela quadra" : "Liberado"}</span>
-      </header>
-      <div class="videos">${front}${back}</div>
-      <div class="row-actions">${actions}</div>
+    <article class="shot">
+      <div class="shot-media">
+        ${video}
+        <span class="shot-time">◷ ${replay.time_label}</span>
+      </div>
+      ${download}
+      ${back}
     </article>
   `;
 }

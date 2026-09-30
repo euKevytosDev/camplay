@@ -127,11 +127,45 @@ class VideoBuffer:
                 "0",
                 "-i",
                 str(list_file),
-                "-c",
-                "copy",
+                "-map",
+                "0:v:0",
+                "-map",
+                "0:a:0?",
+                "-c:v",
+                "libx264",
+                "-preset",
+                "veryfast",
+                "-crf",
+                "23",
+                "-pix_fmt",
+                "yuv420p",
+                "-c:a",
+                "aac",
+                "-movflags",
+                "+faststart",
                 str(out),
             ]
             subprocess.run(cmd, check=True)
+            poster = out.with_suffix(".jpg")
+            subprocess.run(
+                [
+                    "ffmpeg",
+                    "-hide_banner",
+                    "-loglevel",
+                    "error",
+                    "-y",
+                    "-ss",
+                    "0.4",
+                    "-i",
+                    str(out),
+                    "-frames:v",
+                    "1",
+                    "-q:v",
+                    "3",
+                    str(poster),
+                ],
+                check=False,
+            )
         finally:
             list_file.unlink(missing_ok=True)
 

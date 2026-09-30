@@ -104,6 +104,14 @@ def api_court(slug: str, request: Request):
     return court
 
 
+@app.get("/api/courts/{slug}/quadras/{quadra_slug}")
+def api_quadra(slug: str, quadra_slug: str):
+    found = store.get_quadra(slug, quadra_slug)
+    if found is None:
+        raise HTTPException(404, "Quadra não encontrada.")
+    return found
+
+
 @app.post("/api/conta")
 def api_signup(body: dict):
     try:
@@ -195,6 +203,20 @@ def api_replay_file(replay_id: int, angle: str, download: int = 0):
         filename=name if download else None,
         content_disposition_type="attachment" if download else "inline",
     )
+
+
+@app.get("/api/replays/{replay_id}/capa")
+def api_replay_poster(replay_id: int):
+    found = store.replay_file(replay_id, "frente")
+    if found is None:
+        raise HTTPException(404, "Capa não encontrada.")
+    name, locked = found
+    if locked:
+        raise HTTPException(403, "Este lance está reservado pela quadra.")
+    poster = CLIPS_DIR / f"{Path(name).stem}.jpg"
+    if not poster.is_file():
+        raise HTTPException(404, "Capa não encontrada.")
+    return FileResponse(poster, media_type="image/jpeg")
 
 
 @app.post("/clip")

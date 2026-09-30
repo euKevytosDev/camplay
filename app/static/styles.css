@@ -389,6 +389,99 @@ h1 em { font-style: normal; color: var(--lime); display: block; }
 .term h3 { display: grid; gap: 8px; }
 .term h3 span { margin-bottom: 0; }
 
+.arena { max-width: 920px; margin-left: auto; margin-right: auto; }
+.arena h2, .arena .sub, .pick-label, .empty-slot, .empty-hint { text-align: center; }
+.arena .kicker { display: flex; width: fit-content; margin-inline: auto; }
+.pick-label {
+  margin: 28px 0 14px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.quadra-grid { display: grid; gap: 14px; }
+.quadra-pick { min-height: 108px; }
+.day-row, .hour-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 2px 2px 8px;
+  scrollbar-width: none;
+}
+.day-row::-webkit-scrollbar, .hour-row::-webkit-scrollbar { display: none; }
+.day-btn, .hour-btn {
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #121a16;
+  color: var(--text);
+  border-radius: 18px;
+  box-shadow: none;
+  min-width: 108px;
+  padding: 14px 18px;
+}
+.day-btn strong, .hour-btn {
+  font-family: Outfit, sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+.day-btn small { display: block; margin-top: 2px; color: var(--muted); font-weight: 600; }
+.day-btn.on, .hour-btn.on {
+  background: var(--lime);
+  color: var(--ink);
+  border-color: transparent;
+  box-shadow: 0 10px 28px rgba(198, 241, 53, 0.28);
+}
+.day-btn.on small { color: #243000; }
+.hour-row { margin-top: 8px; }
+.hour-btn { min-width: 88px; border-radius: 999px; padding: 10px 16px; }
+.empty-slot, .empty-hint { color: var(--muted); margin: 28px 0 0; }
+.empty-hint { margin-top: 8px; }
+.shot-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 18px;
+}
+.shot {
+  background: rgba(8, 18, 12, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 22px;
+  padding: 8px;
+}
+.shot-media { position: relative; }
+.shot-media video, .shot .locked-box, .shot .empty-angle {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  background: #050a07;
+  object-fit: cover;
+  display: block;
+}
+.shot-time {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  background: rgba(0, 0, 0, 0.62);
+  color: white;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.shot-download {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 4px;
+  color: var(--lime);
+  font-weight: 700;
+  background: transparent;
+  box-shadow: none;
+  padding: 4px;
+}
+.arena .actions { justify-content: center; }
+
 .replay { padding: 12px; }
 .replay header {
   display: flex;
@@ -478,6 +571,8 @@ input {
   .videos { grid-template-columns: 1fr 1fr; }
   .terms { grid-template-columns: 1fr 1fr; gap: 18px; }
   .court-list, .chips { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+  .shot-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 340px)); justify-content: center; }
+  .quadra-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
