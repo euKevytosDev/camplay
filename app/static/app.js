@@ -337,10 +337,12 @@ function shotCard(replay) {
       <div class="shot-media">
         ${video}
         <img class="shot-logo" src="/static/logo.svg?v=4" alt="">
-        <span class="shot-time">◷ ${replay.time_label}</span>
       </div>
-      ${download}
-      ${back}
+      <div class="shot-actions">
+        <span class="shot-time">${replay.time_label}</span>
+        ${download}
+        ${back}
+      </div>
     </article>
   `;
 }
