@@ -9,9 +9,17 @@ const DEMO = [
   "https://assets.mixkit.co/videos/43486/43486-720.mp4",
 ];
 
+const API_ORIGIN = location.hostname.endsWith("github.io")
+  ? "https://tdkvz2rifkvfwfytfgal4whr.76.13.230.107.sslip.io"
+  : "";
+
 let me = null;
 let view = "inicio";
 let homeReady = false;
+
+function server(path) {
+  return API_ORIGIN + path;
+}
 
 function money(cents) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -28,9 +36,9 @@ function when(iso) {
 }
 
 async function api(path, options = {}) {
-  const response = await fetch(path, {
+  const response = await fetch(server(path), {
     headers: { "Content-Type": "application/json", ...(options.headers || {}) },
-    credentials: "same-origin",
+    credentials: API_ORIGIN ? "omit" : "same-origin",
     ...options,
   });
   const data = await response.json().catch(() => ({}));
@@ -184,7 +192,7 @@ async function renderInicio() {
 function footer() {
   return `
     <footer class="site-footer">
-      <img class="footer-logo" src="/static/logo.svg?v=4" alt="CliquePlay" width="92" height="123">
+      <img class="footer-logo" src="static/logo.svg?v=4" alt="CliquePlay" width="92" height="123">
       <p>O replay da sua pelada. O vídeo fica um tempo no ar — se quiser guardar, baixe no celular.</p>
       <nav>
         <a href="#inicio" data-section="inicio">Início</a>
@@ -324,19 +332,19 @@ function shotCard(replay) {
     `;
   }
   const video = replay.has_front
-    ? `<video controls playsinline preload="metadata" poster="/api/replays/${replay.id}/capa" src="/api/replays/${replay.id}/arquivo/frente"></video>`
+    ? `<video controls playsinline preload="metadata" poster="${server(`/api/replays/${replay.id}/capa`)}" src="${server(`/api/replays/${replay.id}/arquivo/frente`)}"></video>`
     : `<div class="empty-angle">Vídeo ainda não chegou.</div>`;
   const download = replay.has_front
-    ? `<a class="shot-download" href="/api/replays/${replay.id}/arquivo/frente?download=1">↓ Baixar</a>`
+    ? `<a class="shot-download" href="${server(`/api/replays/${replay.id}/arquivo/frente?download=1`)}">↓ Baixar</a>`
     : "";
   const back = replay.has_back
-    ? `<a class="shot-download" href="/api/replays/${replay.id}/arquivo/fundo?download=1">↓ Baixar fundo</a>`
+    ? `<a class="shot-download" href="${server(`/api/replays/${replay.id}/arquivo/fundo?download=1`)}">↓ Baixar fundo</a>`
     : "";
   return `
     <article class="shot">
       <div class="shot-media">
         ${video}
-        <img class="shot-logo" src="/static/logo.svg?v=4" alt="">
+        <img class="shot-logo" src="static/logo.svg?v=4" alt="">
       </div>
       <div class="shot-actions">
         <span class="shot-time">${replay.time_label}</span>
