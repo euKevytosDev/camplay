@@ -2,7 +2,7 @@ const app = document.querySelector("#app");
 const accountBtn = document.querySelector("#account-btn");
 const menuAccount = document.querySelector("#menu-account");
 const burger = document.querySelector("#burger");
-const HOME = new Set(["inicio", "quadras", "como", "termos"]);
+const HOME = new Set(["inicio", "quadras", "sobre", "como", "termos"]);
 const DEMO = [
   "https://assets.mixkit.co/videos/2918/2918-720.mp4",
   "https://assets.mixkit.co/videos/42530/42530-720.mp4",
@@ -163,9 +163,35 @@ async function renderInicio() {
       </div>
     </section>
 
+    <section class="section about" id="sobre">
+      <div class="section-head">
+        <span class="kicker">Por que CliquePlay</span>
+        <h2>Operação que acompanha <em>a emoção do jogo.</em></h2>
+        <p class="sub">Simplicidade para o atleta, tecnologia para a arena — replays automáticos com a qualidade que seu esporte merece.</p>
+      </div>
+      <div class="about-grid">
+        <article class="about-card">
+          <h3>Gravação com um toque</h3>
+          <p>Acione o botão na quadra e o replay fica disponível automaticamente na plataforma — sem complicação.</p>
+        </article>
+        <article class="about-card">
+          <h3>Qualidade profissional</h3>
+          <p>Vídeos nítidos para reviver cada jogada, organizar seus lances favoritos e compartilhar com amigos.</p>
+        </article>
+        <article class="about-card">
+          <h3>Onde você joga</h3>
+          <p>Arenas parceiras em todo o Brasil. Acesse pelo site, no celular ou no computador.</p>
+        </article>
+        <article class="about-card">
+          <h3>Memória que fica</h3>
+          <p>Baixe, compartilhe e guarde os melhores momentos. Cada partida vira uma experiência única.</p>
+        </article>
+      </div>
+    </section>
+
     <section class="section" id="como">
       <div class="section-head">
-        <span class="kicker">Passo a passo</span>
+        <span class="kicker">Fluxo enxuto</span>
         <h2>Como funciona</h2>
       </div>
       <div class="steps">
@@ -209,6 +235,7 @@ function footer() {
         <nav>
           <a href="#inicio" data-section="inicio">Início</a>
           <a href="#quadras" data-section="quadras">Quadras</a>
+          <a href="#sobre" data-section="sobre">Sobre</a>
           <a href="#como" data-section="como">Como funciona</a>
           <a href="#termos" data-section="termos">Termos</a>
           <span>cliqueplay.com.br</span>

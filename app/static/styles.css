@@ -266,6 +266,20 @@ h1 em { font-style: normal; color: var(--lime); display: block; }
 @keyframes reel { to { transform: translateX(-50%); } }
 
 .section { margin-top: 104px; }
+.about { text-align: center; }
+.about .section-head { max-width: 46rem; margin-inline: auto; }
+.about h2 em { font-style: normal; color: var(--lime); display: block; }
+.about .sub { max-width: 38rem; margin-inline: auto; }
+#como .section-head { margin-inline: auto; text-align: center; }
+.about-grid { display: grid; gap: 16px; text-align: left; }
+.about-card {
+  background: rgba(20, 22, 21, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 22px 20px;
+}
+.about-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+.about-card p { margin: 0; color: var(--muted); line-height: 1.45; }
 .section-head { max-width: 40rem; margin-bottom: 28px; }
 .section-head .kicker { margin-bottom: 14px; }
 .section h2 { font-size: clamp(2rem, 6vw, 3.2rem); }
@@ -634,6 +648,7 @@ input {
 
 @media (min-width: 640px) {
   .shot-grid { grid-template-columns: 1fr 1fr; }
+  .about-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (min-width: 840px) {
@@ -645,6 +660,7 @@ input {
   .reel-card video { height: 158px; }
   .section { margin-top: 148px; }
   .cards { grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .about-grid { grid-template-columns: repeat(4, 1fr); gap: 18px; }
   .steps { grid-template-columns: repeat(3, 1fr); gap: 18px; }
   .videos { grid-template-columns: 1fr 1fr; }
   .terms { grid-template-columns: 1fr 1fr; gap: 18px; }
