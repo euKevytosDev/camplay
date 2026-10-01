@@ -77,6 +77,16 @@ def _probe_video_end(path: Path) -> float:
     return _probe_duration(path)
 
 
+def _segment_start(path: Path) -> float | None:
+    """Horário em que o pedaço abriu, pelo nome seg_YYYYmmdd_HHMMSS."""
+    raw = path.stem.removeprefix("seg_")
+    try:
+        stamp = datetime.strptime(raw, "%Y%m%d_%H%M%S")
+    except ValueError:
+        return None
+    return stamp.timestamp()
+
+
 def _has_audio(path: Path) -> bool:
     result = subprocess.run(
         [
@@ -228,13 +238,15 @@ class VideoBuffer:
         list_file = work / "list.txt"
 
         try:
-            # Espera o quadro do clique chegar no arquivo, sem fechar o pedaço de 2s.
+            # O clique é agora. O 0,4s só garante que esse quadro já entrou no arquivo.
+            pressed_at = time.time()
             time.sleep(0.4)
             segs = self._segments_newest_first()
             if not segs:
                 raise RuntimeError("Buffer vazio — aguarde alguns segundos com a câmera ligada")
             tail = work / segs[0].name
             tail.write_bytes(segs[0].read_bytes())
+            snapped_at = time.time()
             if tail.stat().st_size < 1000 and len(segs) > 1:
                 tail.unlink()
                 tail = segs[1]
@@ -244,8 +256,9 @@ class VideoBuffer:
 
             tail_duration = _probe_duration(tail)
             covered = tail_duration
-            # Um pedaço a mais no passado, para o corte de 30s não ficar curto.
-            target = float(seconds) + self.segment_seconds
+            # Dois pedaços a mais no passado: um para fechar os 30s,
+            # outro para poder cortar o que passou do botão.
+            target = float(seconds) + (2 * self.segment_seconds)
             chosen: list[Path] = []
             for seg in older:
                 if covered >= target:
@@ -281,15 +294,31 @@ class VideoBuffer:
                 ],
                 check=True,
             )
-            # O fim do arquivo é o clique. O segundo que falta sai do começo.
+            # O arquivo segue até o fim do pedaço de 2s. O corte volta para o botão.
             real_end = _probe_video_end(joined)
+            tail_span = _probe_video_end(tail)
             if real_end <= 0:
                 trim_start = 0.0
                 trim_end = float(seconds)
             else:
-                # 0,05s a mais no começo, para o contador não arredondar para 29.
-                trim_start = max(0.0, real_end - float(seconds) - 0.05)
+                hold = 0.2
                 trim_end = real_end
+                late = max(0.0, snapped_at - pressed_at - hold)
+                trim_end = min(trim_end, real_end - late)
+                started = _segment_start(tail)
+                if started is not None and tail_span > 0:
+                    into = pressed_at - started
+                    if -0.5 <= into <= tail_span + 1:
+                        cut_at = min(tail_span, max(0.0, into + hold))
+                        trim_end = min(trim_end, real_end - tail_span + cut_at)
+                trim_end = min(real_end, max(hold, trim_end))
+                # 0,05s a mais no começo, para o contador não arredondar para 29.
+                trim_start = max(0.0, trim_end - float(seconds) - 0.05)
+                logger.info(
+                    "Corte do lance: tirou %.2fs do final, pedaço de %.2fs",
+                    real_end - trim_end,
+                    tail_span,
+                )
             video_trim = (
                 f"trim=start={trim_start:.3f}:end={trim_end:.3f},"
                 "setpts=PTS-STARTPTS"
