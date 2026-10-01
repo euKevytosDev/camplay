@@ -116,7 +116,7 @@ async function renderInicio() {
   app.innerHTML = `
     <section class="hero" id="inicio">
       <div>
-        <span class="kicker"><i class="pulse"></i> Replay da quadra</span>
+        <span class="kicker"><i class="pulse"></i> Replays Esportivos</span>
         <h1>O lance passou. <em>O vídeo ficou.</em></h1>
         <p class="lead">Um toque no botão guarda o momento. No celular, o card abre com os ângulos prontos para assistir e baixar.</p>
         <div class="actions">
