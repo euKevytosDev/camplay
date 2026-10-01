@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import shutil
 import subprocess
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
@@ -114,6 +115,7 @@ class VideoBuffer:
         self.clip_seconds = clip_seconds
         self.segment_seconds = segment_seconds
         self._proc: subprocess.Popen[str] | None = None
+        self._lock = threading.Lock()
 
         self.buffer_dir.mkdir(parents=True, exist_ok=True)
         self.clips_dir.mkdir(parents=True, exist_ok=True)
@@ -164,8 +166,30 @@ class VideoBuffer:
             if list(self.buffer_dir.glob("seg_*.ts")):
                 break
             if self._proc.poll() is not None:
+                self._proc = None
                 raise RuntimeError("FFmpeg encerrou ao iniciar o buffer")
             time.sleep(0.5)
+        if not list(self.buffer_dir.glob("seg_*.ts")):
+            self.stop()
+            raise RuntimeError("A câmera não respondeu")
+
+    def segment_age(self) -> float | None:
+        segs = list(self.buffer_dir.glob("seg_*.ts"))
+        if not segs:
+            return None
+        newest = max(segs, key=lambda path: path.stat().st_mtime)
+        return time.time() - newest.stat().st_mtime
+
+    def ensure_live(self) -> None:
+        """Reabre a câmera se o modem caiu e o FFmpeg ficou parado na última imagem."""
+        with self._lock:
+            age = self.segment_age()
+            if self.running and age is not None and age <= 20:
+                return
+            if self.running:
+                logger.warning("Buffer sem imagem nova, reconectando a câmera")
+                self.stop()
+            self.start()
 
     def stop(self) -> None:
         if self._proc and self._proc.poll() is None:
@@ -187,6 +211,12 @@ class VideoBuffer:
 
     def save_clip(self, seconds: int | None = None) -> Path:
         seconds = seconds or self.clip_seconds
+        try:
+            self.ensure_live()
+        except Exception as exc:
+            raise RuntimeError("A câmera não está chegando no servidor agora") from exc
+        if (self.segment_age() or 999) > 20:
+            raise RuntimeError("A câmera não está chegando no servidor agora")
         segs = self._segments_newest_first()
         if not segs:
             raise RuntimeError("Buffer vazio — aguarde alguns segundos com a câmera ligada")

@@ -68,12 +68,24 @@ def _retention_loop() -> None:
         _purge_old_clips()
 
 
+def _camera_loop() -> None:
+    while not _stop_retention.wait(20):
+        if not RTSP:
+            continue
+        try:
+            video_buffer.ensure_live()
+        except Exception:
+            logger.exception("Não reconectou a câmera")
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     store.init_db()
     _purge_old_clips()
     cleaner = threading.Thread(target=_retention_loop, name="clip-retention", daemon=True)
     cleaner.start()
+    watcher = threading.Thread(target=_camera_loop, name="camera-watch", daemon=True)
+    watcher.start()
     if not RTSP:
         logger.info("CAMERA_RTSP vazia — site no ar, buffer da câmera desligado")
     else:
