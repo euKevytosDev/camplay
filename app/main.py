@@ -7,6 +7,8 @@ import logging
 import os
 import secrets
 import subprocess
+import threading
+import time
 import urllib.error
 import urllib.request
 from contextlib import asynccontextmanager
@@ -37,6 +39,9 @@ RTSP = os.getenv("CAMERA_RTSP", "")
 BUFFER_SECONDS = int(os.getenv("BUFFER_SECONDS", "120"))
 CLIP_SECONDS = int(os.getenv("CLIP_SECONDS", "30"))
 SEGMENT_SECONDS = int(os.getenv("SEGMENT_SECONDS", "2"))
+CLIP_COOLDOWN_SECONDS = 20
+_clip_guard = threading.Lock()
+_clip_cooldown_until = 0.0
 
 video_buffer = VideoBuffer(
     rtsp_url=RTSP,
@@ -296,14 +301,37 @@ async def receive_lance(request: Request):
     }
 
 
+def _claim_clip() -> None:
+    """Reserva o botão por 20s. O segundo toque nesse intervalo não grava outro vídeo."""
+    global _clip_cooldown_until
+    now = time.monotonic()
+    with _clip_guard:
+        if now < _clip_cooldown_until:
+            wait = max(1, int(_clip_cooldown_until - now + 0.999))
+            raise HTTPException(
+                429,
+                f"Lance já salvo. Aguarde {wait} segundos para gravar outro.",
+            )
+        _clip_cooldown_until = now + CLIP_COOLDOWN_SECONDS
+
+
+def _release_clip() -> None:
+    """Se a gravação falhar, o próximo aperto pode tentar de novo."""
+    global _clip_cooldown_until
+    with _clip_guard:
+        _clip_cooldown_until = 0.0
+
+
 @app.post("/clip")
 def create_clip():
     """Chamado pela plaquinha quando o botão é apertado."""
     if not video_buffer.running:
         raise HTTPException(503, "Buffer não está rodando")
+    _claim_clip()
     try:
         path = video_buffer.save_clip()
     except Exception as exc:
+        _release_clip()
         logger.exception("Erro ao criar clip")
         raise HTTPException(500, str(exc)) from exc
 
