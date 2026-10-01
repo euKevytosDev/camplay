@@ -549,14 +549,70 @@ input {
 
 .site-footer {
   margin-top: 120px;
-  padding-top: 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
   color: var(--muted);
-  display: grid;
-  gap: 8px;
 }
-.footer-logo { display: block; height: 112px; width: auto; }
-.site-footer nav { display: flex; flex-wrap: wrap; gap: 14px; }
+.footer-help {
+  margin: 0;
+  text-align: center;
+  font-size: 0.95rem;
+  padding: 28px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.footer-help a { color: var(--lime); font-weight: 700; }
+.footer-main {
+  display: grid;
+  gap: 28px;
+  padding: 36px 0 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.footer-brand strong {
+  font-family: Outfit, sans-serif;
+  font-weight: 800;
+  font-size: 1.7rem;
+  letter-spacing: -0.04em;
+  color: #fff;
+}
+.footer-brand strong span { color: var(--lime); }
+.footer-brand p {
+  max-width: 280px;
+  margin: 10px 0 0;
+  line-height: 1.45;
+}
+.site-footer nav {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+.site-footer nav span { color: var(--muted); }
+.footer-social {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  align-content: start;
+}
+.footer-social > span {
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.ig-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: #fff;
+}
+.ig-pill svg { display: block; }
+.footer-copy {
+  margin: 0;
+  text-align: center;
+  font-size: 0.82rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 18px 0 8px;
+}
 .site-footer a:hover { color: var(--lime); }
 
 @media (min-width: 840px) {
@@ -573,6 +629,12 @@ input {
   .terms { grid-template-columns: 1fr 1fr; gap: 18px; }
   .court-list, .chips { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
   .shot-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 340px)); justify-content: center; }
+  .footer-main {
+    grid-template-columns: 1.2fr auto 1fr;
+    align-items: center;
+  }
+  .site-footer nav { justify-self: center; }
+  .footer-social { justify-self: end; justify-items: end; }
   .quadra-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 }
 

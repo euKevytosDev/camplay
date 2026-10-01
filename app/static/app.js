@@ -189,17 +189,35 @@ async function renderInicio() {
 }
 
 function footer() {
+  const insta = "https://instagram.com/cliqueplayoficial";
   return `
     <footer class="site-footer">
-      <img class="footer-logo" src="static/logo.svg?v=4" alt="CliquePlay" width="92" height="123">
-      <p>O replay da sua pelada. O vídeo fica um tempo no ar — se quiser guardar, baixe no celular.</p>
-      <nav>
-        <a href="#inicio" data-section="inicio">Início</a>
-        <a href="#quadras" data-section="quadras">Quadras</a>
-        <a href="#como" data-section="como">Como funciona</a>
-        <a href="#termos" data-section="termos">Termos</a>
-      </nav>
-      <p>cliqueplay.com.br</p>
+      <p class="footer-help">Em caso de dúvidas, fale conosco no Instagram <a href="${insta}" target="_blank" rel="noopener">@cliqueplayoficial</a>.</p>
+      <div class="footer-main">
+        <div class="footer-brand">
+          <strong>Clique<span>Play</span></strong>
+          <p>O lance da quadra, pronto para assistir e baixar.</p>
+        </div>
+        <nav>
+          <a href="#inicio" data-section="inicio">Início</a>
+          <a href="#quadras" data-section="quadras">Quadras</a>
+          <a href="#como" data-section="como">Como funciona</a>
+          <a href="#termos" data-section="termos">Termos</a>
+          <span>cliqueplay.com.br</span>
+        </nav>
+        <div class="footer-social">
+          <span>Siga no Instagram</span>
+          <a class="ig-pill" href="${insta}" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+              <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/>
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+            </svg>
+            @cliqueplayoficial
+          </a>
+        </div>
+      </div>
+      <p class="footer-copy">© 2026 CliquePlay. Todos os direitos reservados.</p>
     </footer>
   `;
 }
