@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 import os
 import secrets
 import sqlite3
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
+
+logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = Path(os.getenv("DATABASE_PATH", str(ROOT / "data" / "cliqueplay.db")))
@@ -66,10 +69,69 @@ CREATE TABLE IF NOT EXISTS quadras (
 
 TZ = ZoneInfo("America/Sao_Paulo")
 WEEKDAYS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
+KEEP_DAYS = 3
+CLIPS_DIR = ROOT / "clips"
 
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _retention_cutoff(now: datetime | None = None) -> datetime:
+    """Começo do dia mais antigo que ainda fica. Hoje conta. Os outros dois também."""
+    moment = (now or datetime.now(TZ)).astimezone(TZ)
+    start = moment.replace(hour=0, minute=0, second=0, microsecond=0)
+    return start - timedelta(days=KEEP_DAYS - 1)
+
+
+def _aware(value: str) -> datetime:
+    moment = datetime.fromisoformat(value)
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=timezone.utc)
+    return moment
+
+
+def _clip_file(clips_dir: Path, name: str | None) -> Path | None:
+    if not name:
+        return None
+    base = Path(name).name
+    if not base or base != name:
+        return None
+    root = clips_dir.resolve()
+    path = (root / base).resolve()
+    if root != path.parent:
+        return None
+    return path
+
+
+def _remove_clip(clips_dir: Path, name: str | None) -> None:
+    path = _clip_file(clips_dir, name)
+    if path is None:
+        return
+    path.unlink(missing_ok=True)
+    path.with_suffix(".jpg").unlink(missing_ok=True)
+
+
+def purge_expired_replays(clips_dir: Path | None = None, now: datetime | None = None) -> int:
+    """Apaga lances anteriores aos 3 dias da quadra, arquivo e lista."""
+    clips_dir = clips_dir or CLIPS_DIR
+    cutoff = _retention_cutoff(now)
+    with connect() as conn:
+        rows = conn.execute(
+            "SELECT id, front_file, back_file, created_at FROM replays"
+        ).fetchall()
+        expired = [row for row in rows if _aware(row["created_at"]) < cutoff]
+        if not expired:
+            return 0
+        ids = [int(row["id"]) for row in expired]
+        marks = ",".join("?" for _ in ids)
+        for row in expired:
+            _remove_clip(clips_dir, row["front_file"])
+            _remove_clip(clips_dir, row["back_file"])
+        conn.execute(f"DELETE FROM purchases WHERE replay_id IN ({marks})", ids)
+        conn.execute(f"DELETE FROM replays WHERE id IN ({marks})", ids)
+    logger.info("Lances fora dos %s dias apagados: %s", KEEP_DAYS, len(ids))
+    return len(ids)
 
 
 def connect() -> sqlite3.Connection:
@@ -206,6 +268,7 @@ def user_from_token(token: str | None) -> dict | None:
 
 
 def list_courts(user_id: int | None = None) -> list[dict]:
+    purge_expired_replays()
     with connect() as conn:
         rows = conn.execute(
             """
@@ -224,6 +287,7 @@ def list_courts(user_id: int | None = None) -> list[dict]:
 
 
 def get_court(slug: str, user_id: int | None = None) -> dict | None:
+    purge_expired_replays()
     with connect() as conn:
         row = conn.execute(
             """
@@ -251,6 +315,7 @@ def get_court(slug: str, user_id: int | None = None) -> dict | None:
 
 
 def get_quadra(arena_slug: str, quadra_slug: str) -> dict | None:
+    purge_expired_replays()
     with connect() as conn:
         arena = conn.execute("SELECT * FROM courts WHERE slug = ?", (arena_slug,)).fetchone()
         if arena is None:
@@ -311,10 +376,11 @@ def _days(replays: list[sqlite3.Row]) -> list[dict]:
             }
         )
     today = datetime.now(TZ).date()
+    oldest = today - timedelta(days=KEEP_DAYS - 1)
     days = []
     for day_key in sorted(set(buckets) | {today.isoformat()}):
         day = datetime.fromisoformat(day_key).date()
-        if day > today:
+        if day > today or day < oldest:
             continue
         if day != today and day_key not in buckets:
             continue
@@ -462,6 +528,7 @@ def add_replay(front_file: str, back_file: str | None = None, slug: str | None =
 
 
 def replay_file(replay_id: int, angle: str) -> tuple[str, bool] | None:
+    purge_expired_replays()
     column = "front_file" if angle == "frente" else "back_file" if angle == "fundo" else ""
     if not column:
         return None

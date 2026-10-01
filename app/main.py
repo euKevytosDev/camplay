@@ -53,9 +53,27 @@ video_buffer = VideoBuffer(
 )
 
 
+_stop_retention = threading.Event()
+
+
+def _purge_old_clips() -> None:
+    try:
+        store.purge_expired_replays(CLIPS_DIR)
+    except Exception:
+        logger.exception("Falha ao apagar lances fora dos 3 dias")
+
+
+def _retention_loop() -> None:
+    while not _stop_retention.wait(60):
+        _purge_old_clips()
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     store.init_db()
+    _purge_old_clips()
+    cleaner = threading.Thread(target=_retention_loop, name="clip-retention", daemon=True)
+    cleaner.start()
     if not RTSP:
         logger.info("CAMERA_RTSP vazia — site no ar, buffer da câmera desligado")
     else:
@@ -65,6 +83,7 @@ async def lifespan(_app: FastAPI):
         except Exception:
             logger.exception("Não foi possível iniciar o buffer")
     yield
+    _stop_retention.set()
     video_buffer.stop()
 
 
@@ -353,6 +372,7 @@ def create_clip():
 def download_clip(name: str):
     if ".." in name or "/" in name:
         raise HTTPException(404, "Clip não encontrado")
+    _purge_old_clips()
     if store.file_is_locked(name):
         raise HTTPException(403, "Este lance está reservado pela quadra.")
     path = CLIPS_DIR / name
