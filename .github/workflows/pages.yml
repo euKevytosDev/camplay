@@ -26,7 +26,7 @@ jobs:
         run: |
           mkdir -p _site/static
           cp app/static/index.html _site/index.html
-          cp app/static/styles.css app/static/app.js app/static/favicon.svg app/static/logo.svg _site/static/
+          cp app/static/styles.css app/static/app.js app/static/favicon.png app/static/mark.svg app/static/logo.svg _site/static/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
