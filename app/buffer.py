@@ -338,8 +338,8 @@ class VideoBuffer:
                     f"[0:v]{video_trim}[src]",
                     "[1:v]scale=-1:168,format=rgba,colorchannelmixer=rr=0:gg=0:bb=0:aa=0.55[sh]",
                     "[1:v]scale=-1:168[wm]",
-                    "[src][sh]overlay=28:28[base]",
-                    "[base][wm]overlay=24:24:format=auto[v]",
+                    "[src][sh]overlay=60:52[base]",
+                    "[base][wm]overlay=56:48:format=auto[v]",
                 ]
             else:
                 filters = [f"[0:v]{video_trim}[v]"]
