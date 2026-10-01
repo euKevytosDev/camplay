@@ -159,7 +159,6 @@ async function renderInicio() {
       <div class="section-head">
         <span class="kicker">Passo a passo</span>
         <h2>Como funciona</h2>
-        <p class="sub">A conta só entra se você quiser favoritar quadras ou pedir um lance reservado.</p>
       </div>
       <div class="steps">
         <article class="step"><span class="num">01</span><h3>Jogue na arena parceira</h3><p>Participe da partida em uma das quadras com tecnologia CliquePlay.</p></article>
