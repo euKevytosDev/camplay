@@ -461,8 +461,20 @@ h1 em { font-style: normal; color: var(--lime); display: block; }
   aspect-ratio: 16 / 9;
   border-radius: 16px;
   background: #050a07;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+}
+.shot-media video:fullscreen,
+.shot-media video:-webkit-full-screen,
+video.angle:fullscreen,
+video.angle:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: auto;
+  border-radius: 0;
+  object-fit: contain;
+  background: #000;
 }
 .shot-actions {
   display: flex;
@@ -502,7 +514,7 @@ video.angle, .locked-box, .empty-angle {
   aspect-ratio: 16 / 9;
   border-radius: 16px;
   background: #08140d;
-  object-fit: cover;
+  object-fit: contain;
 }
 .locked-box, .empty-angle {
   display: grid;
