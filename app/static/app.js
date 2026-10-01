@@ -162,9 +162,9 @@ async function renderInicio() {
         <p class="sub">A conta só entra se você quiser favoritar quadras ou pedir um lance reservado.</p>
       </div>
       <div class="steps">
-        <article class="step"><span class="num">01</span><h3>Abra a quadra</h3><p>Entre no site e escolha o lugar da partida.</p></article>
-        <article class="step"><span class="num">02</span><h3>Aperte o botão</h3><p>No momento do lance, o toque na quadra pede o vídeo.</p></article>
-        <article class="step"><span class="num">03</span><h3>Baixe e mande</h3><p>O card aparece com os ângulos, prontos para ver, salvar e enviar.</p></article>
+        <article class="step"><span class="num">01</span><h3>Jogue na arena parceira</h3><p>Participe da partida em uma das quadras com tecnologia CliquePlay.</p></article>
+        <article class="step"><span class="num">02</span><h3>Acione o replay</h3><p>Pressione o botão físico na quadra no momento do lance.</p></article>
+        <article class="step"><span class="num">03</span><h3>Assista e compartilhe</h3><p>O vídeo fica disponível no site para ver, baixar e enviar.</p></article>
       </div>
     </section>
 
