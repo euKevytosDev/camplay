@@ -404,10 +404,15 @@ h1 em { font-style: normal; color: var(--lime); display: block; }
 .quadra-pick { min-height: 108px; }
 .day-row, .hour-row {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  justify-content: safe center;
   gap: 10px;
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
-  padding: 14px 12px 18px;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 2px 18px;
   scrollbar-width: none;
 }
 .day-row::-webkit-scrollbar, .hour-row::-webkit-scrollbar { display: none; }
@@ -440,7 +445,7 @@ h1 em { font-style: normal; color: var(--lime); display: block; }
 .empty-hint { margin-top: 8px; }
 .shot-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 14px;
   margin-top: 18px;
 }
@@ -614,6 +619,10 @@ input {
   padding: 18px 0 8px;
 }
 .site-footer a:hover { color: var(--lime); }
+
+@media (min-width: 640px) {
+  .shot-grid { grid-template-columns: 1fr 1fr; }
+}
 
 @media (min-width: 840px) {
   .burger, .mobile-menu { display: none; }

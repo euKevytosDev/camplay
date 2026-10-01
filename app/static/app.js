@@ -64,6 +64,14 @@ function closeMenu() {
   burger.setAttribute("aria-label", "Abrir menu");
 }
 
+function centerChip(rowSelector, chipSelector) {
+  const row = document.querySelector(rowSelector);
+  const chip = row?.querySelector(chipSelector);
+  if (!row || !chip) return;
+  const left = chip.offsetLeft - (row.clientWidth - chip.offsetWidth) / 2;
+  row.scrollLeft = Math.max(0, left);
+}
+
 function scrollToId(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -333,6 +341,8 @@ async function renderHorarios(arenaSlug, quadraSlug) {
     document.querySelectorAll("[data-buy]").forEach((button) => {
       button.addEventListener("click", () => buy(button.dataset.buy));
     });
+    centerChip(".day-row", ".day-btn.on");
+    centerChip(".hour-row", ".hour-btn.on");
     setActive();
   }
 
