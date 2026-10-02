@@ -10,3 +10,5 @@ clips/
 *.ts
 .idea/
 .vscode/
+.pio/
+firmware/**/.pio/
