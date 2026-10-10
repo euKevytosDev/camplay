@@ -96,7 +96,7 @@ function demoReel() {
   `).join("");
   return `
     <div class="reel-wrap">
-      <p class="reel-label">Lances de exemplo, rolando agora</p>
+      <p class="reel-label">Exemplos de jogo</p>
       <div class="reel"><div class="reel-track">${cards}</div></div>
     </div>
   `;
@@ -123,97 +123,95 @@ async function renderInicio() {
 
   app.innerHTML = `
     <section class="hero" id="inicio">
-      <div>
-        <span class="kicker"><i class="pulse"></i> Replays Esportivos</span>
-        <h1>O lance passou. <em>O vídeo ficou.</em></h1>
-        <p class="lead">Um toque no botão guarda o momento. No celular, o card abre com os ângulos prontos para assistir e baixar.</p>
+      <div class="hero-copy">
+        <p class="kicker">Replay da partida</p>
+        <h1>Saiu o lance.<em>Baixa o vídeo.</em></h1>
+        <p class="lead">Alguém aperta o botão na quadra. Você abre o site, acha o horário e leva o arquivo no celular.</p>
         <div class="actions">
-          <a class="btn" href="#quadras" data-section="quadras">Ver quadras</a>
-          <a class="btn ghost" href="#como" data-section="como">Como funciona</a>
+          <a class="btn" href="#quadras" data-section="quadras">Abrir as quadras</a>
+          <a class="btn ghost" href="#como" data-section="como">Como baixar</a>
         </div>
       </div>
-      <div class="stage">
-        <div class="stage-top"><i></i><em>Exemplo de lance</em></div>
+      <figure class="stage">
         <video autoplay muted loop playsinline preload="metadata" src="${DEMO[0]}"></video>
-        <div class="float live"><i class="pulse"></i> Rolando agora</div>
-        <div class="float ready">Pronto para baixar</div>
-      </div>
+        <figcaption>Exemplo de jogo</figcaption>
+      </figure>
     </section>
     ${demoReel()}
 
     <section class="section" id="quadras">
       <div class="section-head">
-        <span class="kicker">Quadras</span>
-        <h2>Escolha a quadra</h2>
-        <p class="sub">Toque no lugar. Dentro, escolha a quadra, o dia e o horário do lance.</p>
+        <p class="kicker">Quadras</p>
+        <h2>Onde foi a partida</h2>
+        <p class="sub">Entra no local. Dentro, escolhe a quadra, o dia e a hora do lance.</p>
       </div>
       <div class="chips">${tiles}</div>
     </section>
 
-    <section class="section" id="campo">
+    <section class="section split" id="campo">
       <div class="section-head">
-        <span class="kicker">Na prática</span>
-        <h2>Feito para quem está em campo</h2>
+        <p class="kicker">Para quem joga</p>
+        <h2>O vídeo fica fácil de achar</h2>
       </div>
-      <div class="cards">
-        <article class="card feature"><span class="feature-index">01</span><h3>Um toque, um card</h3><p>O botão guarda o lance. Os ângulos daquela jogada ficam no mesmo lugar.</p></article>
-        <article class="card feature"><span class="feature-index">02</span><h3>Baixa sem conta</h3><p>Dá para assistir e salvar o vídeo direto pelo celular.</p></article>
-        <article class="card feature"><span class="feature-index">03</span><h3>Quadra favorita</h3><p>Quem cria conta marca as quadras e acha o próximo jogo mais rápido.</p></article>
-        <article class="card feature"><span class="feature-index">04</span><h3>Lance reservado</h3><p>A quadra pode cobrar um vídeo. O valor é do dono da quadra.</p></article>
-      </div>
+      <ol class="plain-list">
+        <li><span>01</span><div><h3>O botão guarda o trecho</h3><p>Um aperto e os ângulos daquela jogada ficam no mesmo lugar.</p></div></li>
+        <li><span>02</span><div><h3>Baixa sem criar conta</h3><p>Dá para assistir e salvar o vídeo direto pelo celular.</p></div></li>
+        <li><span>03</span><div><h3>Marca a quadra de sempre</h3><p>Quem cria conta guarda as quadras e volta no próximo jogo mais rápido.</p></div></li>
+        <li><span>04</span><div><h3>Se a quadra cobrar</h3><p>O vídeo pode ficar fechado. O valor, se houver, é do dono da quadra.</p></div></li>
+      </ol>
     </section>
 
     <section class="section about" id="sobre">
-      <div class="section-head">
-        <span class="kicker">Por que CliquePlay</span>
-        <h2>Operação que acompanha <em>a emoção do jogo.</em></h2>
-        <p class="sub">Simplicidade para o atleta, tecnologia para a arena — replays automáticos com a qualidade que seu esporte merece.</p>
+      <div class="about-intro">
+        <p class="kicker">Sobre</p>
+        <h2>Um site para levar o lance embora.</h2>
+        <p class="sub">Society, futebol, vôlei, o que rolar na quadra. Sem aplicativo: abre no navegador e baixa.</p>
       </div>
-      <div class="about-grid">
-        <article class="about-card">
-          <h3>Gravação com um toque</h3>
-          <p>Acione o botão na quadra e o replay fica disponível automaticamente na plataforma — sem complicação.</p>
+      <div class="about-band">
+        <article>
+          <h3>Botão na quadra</h3>
+          <p>Aperta na hora do lance e o trecho sobe sozinho para o site.</p>
         </article>
-        <article class="about-card">
-          <h3>Qualidade profissional</h3>
-          <p>Vídeos nítidos para reviver cada jogada, organizar seus lances favoritos e compartilhar com amigos.</p>
+        <article>
+          <h3>Imagem para rever</h3>
+          <p>Vídeo nítido o bastante para ver de novo e mandar no grupo.</p>
         </article>
-        <article class="about-card">
+        <article>
           <h3>Onde você joga</h3>
-          <p>Arenas parceiras em todo o Brasil. Acesse pelo site, no celular ou no computador.</p>
+          <p>Quadras parceiras no Brasil. Celular ou computador, pelo site.</p>
         </article>
-        <article class="about-card">
-          <h3>Memória que fica</h3>
-          <p>Baixe, compartilhe e guarde os melhores momentos. Cada partida vira uma experiência única.</p>
+        <article>
+          <h3>O arquivo é seu</h3>
+          <p>Quem quiser guardar baixa o vídeo. No site ele fica por um tempo.</p>
         </article>
       </div>
     </section>
 
     <section class="section" id="como">
       <div class="section-head">
-        <span class="kicker">Fluxo enxuto</span>
-        <h2>Como funciona</h2>
+        <p class="kicker">Depois do jogo</p>
+        <h2>Quadra, horário, download.</h2>
       </div>
-      <div class="steps">
-        <article class="step"><span class="num">01</span><h3>Jogue na arena parceira</h3><p>Participe da partida em uma das quadras com tecnologia CliquePlay.</p></article>
-        <article class="step"><span class="num">02</span><h3>Acione o replay</h3><p>Pressione o botão físico na quadra no momento do lance.</p></article>
-        <article class="step"><span class="num">03</span><h3>Assista e compartilhe</h3><p>O vídeo fica disponível no site para ver, baixar e enviar.</p></article>
-      </div>
+      <ol class="steps">
+        <li class="step"><span class="num">01</span><div><h3>Escolhe a quadra e o dia</h3><p>Entra no local da partida e no dia em que você jogou.</p></div></li>
+        <li class="step"><span class="num">02</span><div><h3>Acha o horário do lance</h3><p>Só aparece hora em que alguém apertou o botão na quadra.</p></div></li>
+        <li class="step"><span class="num">03</span><div><h3>Baixa o vídeo</h3><p>Assiste na hora e salva o arquivo no celular.</p></div></li>
+      </ol>
     </section>
 
     <section class="section" id="termos">
       <div class="section-head">
-        <span class="kicker">Transparência</span>
-        <h2>Termos de uso</h2>
-        <p class="sub">Ao usar o site, você concorda com estes pontos. Eles podem ser atualizados conforme o serviço cresce.</p>
+        <p class="kicker">Regras do site</p>
+        <h2>O que vale ao usar</h2>
+        <p class="sub">Ao entrar no site, você aceita estes pontos. Eles podem mudar conforme o serviço cresce.</p>
       </div>
       <div class="terms">
-        <article class="term"><h3><span>01</span> O CliquePlay</h3><p>O site mostra replays gravados em quadras parceiras quando alguém aciona o botão. O acesso é pelo navegador do celular ou do computador.</p></article>
-        <article class="term"><h3><span>02</span> Uso</h3><p>Dá para assistir, baixar e compartilhar os lances liberados. Não use o material para ofender alguém ou violar direito de imagem.</p></article>
-        <article class="term"><h3><span>03</span> Tempo no ar</h3><p>Os vídeos ficam disponíveis por um período. Quem quiser guardar baixa o arquivo. O CliquePlay não promete arquivo eterno.</p></article>
-        <article class="term"><h3><span>04</span> Imagem na quadra</h3><p>A gravação acontece na quadra, em ambiente de jogo, com aviso visível. Não filmamos área privada.</p></article>
-        <article class="term"><h3><span>05</span> Lance reservado</h3><p>O dono da quadra pode deixar um vídeo bloqueado. Se houver cobrança, o valor é dele. Enquanto o pagamento não estiver ligado, o pedido fica só anotado e o vídeo continua reservado.</p></article>
-        <article class="term"><h3><span>06</span> Conta</h3><p>Criar conta é opcional. Ela serve para favoritar quadras e pedir lances reservados.</p></article>
+        <article class="term"><h3><span>01</span> O que é</h3><p>O site mostra o replay das quadras parceiras quando alguém aperta o botão. O acesso é pelo navegador do celular ou do computador.</p></article>
+        <article class="term"><h3><span>02</span> O que pode</h3><p>Dá para assistir, baixar e compartilhar os lances liberados. Não use o vídeo para ofender alguém ou ferir direito de imagem.</p></article>
+        <article class="term"><h3><span>03</span> Quanto tempo fica</h3><p>Os vídeos ficam no ar por um período. Quem quiser guardar baixa o arquivo. O CliquePlay não guarda para sempre.</p></article>
+        <article class="term"><h3><span>04</span> O que é filmado</h3><p>A gravação é da área de jogo, com aviso visível na quadra. Área privada não entra.</p></article>
+        <article class="term"><h3><span>05</span> Vídeo fechado</h3><p>O dono da quadra pode bloquear um vídeo. Se houver cobrança, o valor é dele. Enquanto o pagamento não estiver ligado, o pedido fica só anotado e o vídeo continua fechado.</p></article>
+        <article class="term"><h3><span>06</span> Conta</h3><p>Criar conta é opcional. Ela serve para marcar quadras e pedir um vídeo fechado.</p></article>
       </div>
     </section>
     ${footer()}
@@ -230,13 +228,13 @@ function footer() {
       <div class="footer-main">
         <div class="footer-brand">
           <strong>Clique<span>Play</span></strong>
-          <p>O lance da quadra, pronto para assistir e baixar.</p>
+          <p>O replay da partida, pronto para assistir e baixar.</p>
         </div>
         <nav>
           <a href="#inicio" data-section="inicio">Início</a>
           <a href="#quadras" data-section="quadras">Quadras</a>
           <a href="#sobre" data-section="sobre">Sobre</a>
-          <a href="#como" data-section="como">Como funciona</a>
+          <a href="#como" data-section="como">Como baixar</a>
           <a href="#termos" data-section="termos">Termos</a>
           <span>cliqueplay.com.br</span>
         </nav>
@@ -289,7 +287,7 @@ async function renderArena(slug) {
       <span class="play" aria-hidden="true">▶</span>
       <span class="court-copy">
         <strong>${quadra.name}</strong>
-        <small>Assistir replay${quadra.replay_count ? ` · ${quadra.replay_count} lance${quadra.replay_count === 1 ? "" : "s"}` : ""}</small>
+        <small>Ver lances${quadra.replay_count ? ` · ${quadra.replay_count} lance${quadra.replay_count === 1 ? "" : "s"}` : ""}</small>
       </span>
       <span class="court-go" aria-hidden="true">→</span>
     </a>
@@ -298,8 +296,8 @@ async function renderArena(slug) {
     <section class="section arena" style="margin-top:8px">
       <p class="kicker">${court.city}</p>
       <h2>${court.name}</h2>
-      <p class="sub">${court.about || "Escolha a quadra e veja os lances do botão."}</p>
-      <p class="pick-label">Escolha sua quadra</p>
+      <p class="sub">${court.about || "Escolhe a quadra. Os lances do botão estão aqui."}</p>
+      <p class="pick-label">Qual quadra</p>
       <div class="quadra-grid">${quadras}</div>
       <div class="actions">
         <button class="btn" id="fav-btn" type="button">${favLabel}</button>
@@ -337,13 +335,13 @@ async function renderHorarios(arenaSlug, quadraSlug) {
     const selected = day.hours.find((hour) => hour.hour === hourKey);
     const shots = selected
       ? `<div class="shot-grid">${selected.replays.map(shotCard).join("")}</div>`
-      : `<p class="empty-slot">Nenhum horário disponível neste dia.</p><p class="empty-hint">Selecione um horário para ver os replays.</p>`;
+      : `<p class="empty-slot">Nenhum horário neste dia.</p><p class="empty-hint">Escolhe um horário para ver os vídeos.</p>`;
     app.innerHTML = `
       <section class="section arena" style="margin-top:8px">
         <p class="kicker">${data.quadra.name}</p>
         <h2>${data.arena.name}</h2>
-        <p class="sub">Escolha o dia e o horário. Só aparece hora em que alguém apertou o botão.</p>
-        <p class="pick-label">Selecione dia e horário</p>
+        <p class="sub">Escolhe o dia e a hora. Só aparece horário em que o botão foi apertado.</p>
+        <p class="pick-label">Dia e hora</p>
         <div class="day-row">${days}</div>
         <div class="hour-row">${hours}</div>
         ${shots}
@@ -410,7 +408,7 @@ function shotCard(replay) {
 
 function lockedBox(replay) {
   const price = replay.price_cents ? money(replay.price_cents) : "valor a combinar";
-  return `<div class="locked-box"><div><strong>Vídeo reservado</strong><br>${price}<br>O pagamento vai para o dono da quadra.</div></div>`;
+  return `<div class="locked-box"><div><strong>Vídeo fechado</strong><br>${price}<br>Se houver cobrança, o valor fica com o dono da quadra.</div></div>`;
 }
 
 async function toggleFavorite(court) {
@@ -461,7 +459,7 @@ function renderConta() {
         <p class="error" id="auth-error"></p>
         <button class="btn full" type="submit">Entrar</button>
       </form>
-      <p class="notice">Sem conta você já escolhe a quadra e baixa o que estiver liberado. A conta guarda favoritas e pedidos de vídeo reservado.</p>
+      <p class="notice">Sem conta você já escolhe a quadra e baixa o que estiver liberado. A conta só guarda quadras marcadas e pedidos de vídeo fechado.</p>
     </div>`
   );
   const form = document.querySelector("#auth-form");
@@ -515,10 +513,10 @@ async function renderContaLogada() {
           <small>${item.status} · ${money(item.amount_cents)}</small>
         </article>
       `).join("")
-    : `<p class="empty">Nenhum pedido de lance reservado.</p>`;
+    : `<p class="empty">Nenhum pedido de vídeo fechado.</p>`;
   shell(
     `Olá, ${me.name.split(" ")[0]}`,
-    `<p class="notice">Favoritas e pedidos ficam nesta conta. O dinheiro de um lance reservado, quando o pagamento entrar, vai para o dono da quadra.</p>
+    `<p class="notice">Quadras marcadas e pedidos ficam nesta conta. O dinheiro de um vídeo fechado, quando o pagamento entrar, vai para o dono da quadra.</p>
      <h3 style="margin:18px 0 10px">Quadras favoritas</h3>
      <div class="chips">${favs}</div>
      <h3 style="margin:18px 0 10px">Pedidos</h3>
