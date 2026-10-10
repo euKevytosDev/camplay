@@ -125,40 +125,34 @@ async function renderInicio() {
     <section class="hero" id="inicio">
       <div class="hero-copy">
         <p class="kicker">Replay da partida</p>
-        <h1>Saiu o lance.<em>Baixa o vídeo.</em></h1>
-        <p class="lead">Alguém aperta o botão na quadra. Você abre o site, acha o horário e leva o arquivo no celular.</p>
+        <h1>Reveja seus melhores lances e baixe o vídeo da sua partida em segundos.</h1>
+        <p class="lead">O botão na quadra guarda o lance. Aqui você acha o horário e salva o arquivo no celular.</p>
         <div class="actions">
-          <a class="btn" href="#quadras" data-section="quadras">Abrir as quadras</a>
+          <a class="btn" href="#quadras" data-section="quadras">Ver quadras</a>
           <a class="btn ghost" href="#como" data-section="como">Como baixar</a>
         </div>
       </div>
-      <figure class="stage">
-        <video autoplay muted loop playsinline preload="metadata" src="${DEMO[0]}"></video>
-        <figcaption>Exemplo de jogo</figcaption>
-      </figure>
+      <div class="hero-panel" id="quadras">
+        <div class="section-head">
+          <h2>Escolha a quadra</h2>
+          <p class="sub">Entra no local. Dentro, escolhe a quadra, o dia e a hora do lance.</p>
+        </div>
+        <div class="chips">${tiles}</div>
+      </div>
     </section>
     ${demoReel()}
 
-    <section class="section" id="quadras">
-      <div class="section-head">
-        <p class="kicker">Quadras</p>
-        <h2>Onde foi a partida</h2>
-        <p class="sub">Entra no local. Dentro, escolhe a quadra, o dia e a hora do lance.</p>
-      </div>
-      <div class="chips">${tiles}</div>
-    </section>
-
-    <section class="section split" id="campo">
+    <section class="section" id="campo">
       <div class="section-head">
         <p class="kicker">Para quem joga</p>
-        <h2>O vídeo fica fácil de achar</h2>
+        <h2>O vídeo, sem complicar</h2>
       </div>
-      <ol class="plain-list">
-        <li><span>01</span><div><h3>O botão guarda o trecho</h3><p>Um aperto e os ângulos daquela jogada ficam no mesmo lugar.</p></div></li>
-        <li><span>02</span><div><h3>Baixa sem criar conta</h3><p>Dá para assistir e salvar o vídeo direto pelo celular.</p></div></li>
-        <li><span>03</span><div><h3>Marca a quadra de sempre</h3><p>Quem cria conta guarda as quadras e volta no próximo jogo mais rápido.</p></div></li>
-        <li><span>04</span><div><h3>Se a quadra cobrar</h3><p>O vídeo pode ficar fechado. O valor, se houver, é do dono da quadra.</p></div></li>
-      </ol>
+      <div class="benefit-grid">
+        <article class="benefit"><span>01</span><h3>Gravação automática da jogada</h3><p>Encontre os momentos do jogo sem complicação.</p></article>
+        <article class="benefit"><span>02</span><h3>Download direto no celular</h3><p>Assista e salve o vídeo na hora, sem criar conta.</p></article>
+        <article class="benefit"><span>03</span><h3>Suas quadras favoritas</h3><p>Crie sua conta para guardar os locais que você mais joga e voltar neles mais rápido.</p></article>
+        <article class="benefit"><span>04</span><h3>Transparência e acesso</h3><p>Veja o que a quadra libera e baixe o vídeo.</p></article>
+      </div>
     </section>
 
     <section class="section about" id="sobre">

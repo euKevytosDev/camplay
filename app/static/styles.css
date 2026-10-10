@@ -1,16 +1,16 @@
 :root {
-  --bg: #f6f3ea;
-  --surface: rgba(255, 255, 255, 0.92);
-  --text: #1c2418;
-  --muted: #4d574f;
-  --lime: #c6ef3a;
-  --green: #3f6b12;
-  --ink: #152006;
+  --bg: #f4f5f2;
+  --surface: #ffffff;
+  --text: #141614;
+  --muted: #3c433e;
+  --lime: #d2fd32;
+  --green: #1e4d16;
+  --ink: #142006;
   --danger: #9f2d22;
-  --line: rgba(22, 32, 18, 0.14);
+  --line: #e3e5e0;
   --header: 64px;
   --safe-bottom: env(safe-area-inset-bottom);
-  font-family: Barlow, "Segoe UI", sans-serif;
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -19,15 +19,7 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--text);
-  background: #e7efe4 url("fundo-volei.jpg") center / cover no-repeat fixed;
-}
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(255, 252, 246, 0.58);
-  pointer-events: none;
-  z-index: 0;
+  background: var(--bg);
 }
 a { color: inherit; text-decoration: none; }
 button, input { font: inherit; }
@@ -41,7 +33,7 @@ button { cursor: pointer; }
   gap: 12px;
   height: var(--header);
   padding: 0 16px;
-  background: rgba(255, 252, 246, 0.92);
+  background: #f4f5f2;
   border-bottom: 1px solid var(--line);
   position: sticky;
 }
@@ -49,11 +41,11 @@ button { cursor: pointer; }
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: "Barlow Condensed", Barlow, sans-serif;
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
   font-weight: 700;
   letter-spacing: 0.01em;
   font-size: 1.55rem;
-  text-transform: uppercase;
+  text-transform: none;
 }
 .logo img { display: block; height: 36px; width: auto; }
 .logo span span { color: var(--green); }
@@ -121,7 +113,7 @@ body.menu-open .burger span:nth-child(3) { transform: translateY(-7px) rotate(-4
   display: grid;
   gap: 0;
   padding: 8px 12px 16px;
-  background: rgba(255, 252, 246, 0.98);
+  background: #f4f5f2;
   border-bottom: 1px solid var(--line);
   transform: translateY(-8px);
   opacity: 0;
@@ -162,13 +154,37 @@ main {
   color: var(--green);
   font-size: 0.78rem;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
+  text-transform: none;
   font-weight: 700;
 }
-h1, h2, h3 { font-family: "Barlow Condensed", Barlow, sans-serif; letter-spacing: 0; margin: 0; font-weight: 700; }
-h1 { font-size: clamp(3.4rem, 12vw, 5.6rem); line-height: 0.9; max-width: 12ch; text-transform: uppercase; margin-inline: auto; }
-h1 em { font-style: normal; color: var(--green); display: block; }
-.lead { color: var(--muted); font-size: 1.12rem; line-height: 1.5; max-width: 36ch; margin-inline: auto; }
+h1, h2, h3 { font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif; letter-spacing: -0.03em; margin: 0; font-weight: 700; }
+h1 { font-size: clamp(2rem, 4.8vw, 3.2rem); line-height: 1.18; max-width: 16em; font-weight: 800; margin-inline: auto; }
+h1 em { font-style: normal; color: var(--text); }
+.lead { color: var(--muted); font-size: 1.08rem; line-height: 1.55; max-width: 38em; margin-inline: auto; }
+.hero-panel {
+  width: min(760px, 100%);
+  padding: 28px 22px 18px;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(20, 24, 18, 0.05);
+}
+.hero-panel .section-head { margin-bottom: 16px; }
+.benefit-grid { display: grid; gap: 16px; }
+.benefit {
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 24px;
+  text-align: left;
+}
+.benefit > span {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+.benefit p { margin: 0; color: var(--muted); line-height: 1.5; }
 
 .stage {
   margin: 0;
@@ -188,7 +204,7 @@ h1 em { font-style: normal; color: var(--green); display: block; }
   color: var(--muted);
   font-size: 0.82rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+  text-transform: none;
   border-top: 1px solid var(--line);
 }
 
@@ -196,7 +212,7 @@ h1 em { font-style: normal; color: var(--green); display: block; }
 .reel-label {
   color: var(--muted);
   letter-spacing: 0.14em;
-  text-transform: uppercase;
+  text-transform: none;
   font-size: 0.75rem;
   font-weight: 700;
   margin: 0 0 12px;
@@ -224,13 +240,13 @@ h1 em { font-style: normal; color: var(--green); display: block; }
   color: #fff;
   font-size: 0.72rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+  text-transform: none;
 }
 @keyframes reel { to { transform: translateX(-50%); } }
 
 .section { margin-top: 88px; }
 .section-head, .about-intro { max-width: 40rem; margin: 0 auto 28px; text-align: center; }
-.section h2 { font-size: clamp(2.2rem, 7vw, 3.6rem); line-height: 0.95; text-transform: uppercase; }
+.section h2 { font-size: clamp(1.7rem, 3vw, 2.35rem); line-height: 1.2; }
 .sub { color: var(--muted); margin: 12px 0 0; line-height: 1.5; font-size: 1.05rem; }
 
 .split {
@@ -252,11 +268,11 @@ h1 em { font-style: normal; color: var(--green); display: block; }
 }
 .plain-list li > span {
   color: var(--green);
-  font-family: "Barlow Condensed", Barlow, sans-serif;
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
   font-weight: 700;
   font-size: 1.25rem;
 }
-.plain-list h3, .step h3, .term h3, .about-band h3 { font-size: 1.35rem; text-transform: uppercase; margin-bottom: 6px; }
+.plain-list h3, .step h3, .term h3, .about-band h3, .benefit h3 { font-size: 1.12rem; margin-bottom: 8px; }
 .plain-list p, .step p, .term p, .about-band p { margin: 0; color: var(--muted); line-height: 1.45; }
 
 .about-band {
@@ -287,7 +303,7 @@ h1 em { font-style: normal; color: var(--green); display: block; }
 .num {
   color: var(--ink);
   background: var(--lime);
-  font-family: "Barlow Condensed", Barlow, sans-serif;
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
   font-weight: 700;
   width: 40px;
   height: 40px;
@@ -301,7 +317,7 @@ h1 em { font-style: normal; color: var(--green); display: block; }
 .term h3 { display: grid; gap: 4px; }
 .term h3 span {
   color: var(--green);
-  font-family: "Barlow Condensed", Barlow, sans-serif;
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
   font-weight: 700;
   letter-spacing: 0.08em;
   font-size: 0.95rem;
@@ -330,10 +346,10 @@ h1 em { font-style: normal; color: var(--green); display: block; }
 }
 .court-tile:hover { border-color: rgba(198, 239, 58, 0.45); }
 .court-copy { display: grid; gap: 2px; }
-.court-copy strong { font-family: "Barlow Condensed", Barlow, sans-serif; font-size: 1.45rem; text-transform: uppercase; font-weight: 700; }
+.court-copy strong { font-size: 1.15rem; font-weight: 700; }
 .court-meta { display: grid; justify-items: end; gap: 0; }
 .court-meta b {
-  font-family: "Barlow Condensed", Barlow, sans-serif;
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
   font-size: 1.7rem;
   line-height: 1;
   color: var(--green);
@@ -365,7 +381,7 @@ h1 em { font-style: normal; color: var(--green); display: block; }
 .pick-label {
   margin: 28px 0 12px;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
+  text-transform: none;
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 700;
@@ -395,7 +411,7 @@ h1 em { font-style: normal; color: var(--green); display: block; }
   padding: 12px 14px;
 }
 .day-btn strong, .hour-btn {
-  font-family: "Barlow Condensed", Barlow, sans-serif;
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
   font-weight: 700;
   font-size: 1.2rem;
 }
@@ -536,10 +552,10 @@ input {
   border-top: 1px solid var(--line);
 }
 .footer-brand strong {
-  font-family: "Barlow Condensed", Barlow, sans-serif;
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
   font-weight: 700;
   font-size: 2rem;
-  text-transform: uppercase;
+  text-transform: none;
   color: var(--text);
 }
 .footer-brand strong span { color: var(--green); }
@@ -550,7 +566,7 @@ input {
   letter-spacing: 0.14em;
   font-size: 0.72rem;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: none;
 }
 .ig-pill {
   display: inline-flex;
@@ -573,6 +589,7 @@ input {
 .reel-label { text-align: center; }
 
 @media (min-width: 640px) {
+  .benefit-grid { grid-template-columns: 1fr 1fr; }
   .shot-grid { grid-template-columns: 1fr 1fr; }
   .about-band { grid-template-columns: 1fr 1fr; }
   .about-band article:nth-child(odd) { padding-right: 28px; }
@@ -587,6 +604,7 @@ input {
   .desk-nav { display: flex; }
   .account-btn { margin-left: 0; }
   .hero { padding-top: 36px; }
+  .benefit-grid { grid-template-columns: repeat(4, 1fr); }
   .reel-card { width: 260px; }
   .reel-card video { height: 146px; }
   .section { margin-top: 120px; }
