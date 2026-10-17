@@ -112,10 +112,6 @@ async function renderInicio() {
             <strong>${court.name}</strong>
             <small>${court.city}${court.favorite ? " · favorita" : ""}</small>
           </span>
-          <span class="court-meta">
-            <b>${court.replay_count}</b>
-            <small>lance${court.replay_count === 1 ? "" : "s"}</small>
-          </span>
           <span class="court-go" aria-hidden="true">→</span>
         </a>
       `).join("")
@@ -257,7 +253,7 @@ function courtCard(court) {
         <strong>${court.name}</strong><br>
         <small>${court.city}${star}</small>
       </span>
-      <small>${court.replay_count} lance${court.replay_count === 1 ? "" : "s"}</small>
+      <small>${court.city}</small>
     </a>
   `;
 }
@@ -281,7 +277,7 @@ async function renderArena(slug) {
       <span class="play" aria-hidden="true">▶</span>
       <span class="court-copy">
         <strong>${quadra.name}</strong>
-        <small>Ver lances${quadra.replay_count ? ` · ${quadra.replay_count} lance${quadra.replay_count === 1 ? "" : "s"}` : ""}</small>
+        <small>Ver lances</small>
       </span>
       <span class="court-go" aria-hidden="true">→</span>
     </a>

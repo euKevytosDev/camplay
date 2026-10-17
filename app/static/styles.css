@@ -338,7 +338,7 @@ h1 em { font-style: normal; color: var(--text); }
 }
 .court-tile {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr auto;
   gap: 14px;
   align-items: center;
   min-height: 88px;
