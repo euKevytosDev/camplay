@@ -347,13 +347,6 @@ h1 em { font-style: normal; color: var(--text); }
 .court-tile:hover { border-color: rgba(198, 239, 58, 0.45); }
 .court-copy { display: grid; gap: 2px; }
 .court-copy strong { font-size: 1.15rem; font-weight: 700; }
-.court-meta { display: grid; justify-items: end; gap: 0; }
-.court-meta b {
-  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
-  font-size: 1.7rem;
-  line-height: 1;
-  color: var(--green);
-}
 .court-go {
   width: 36px;
   height: 36px;
