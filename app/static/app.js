@@ -123,12 +123,12 @@ async function renderInicio() {
   app.innerHTML = `
     <section class="hero" id="inicio">
       <div class="hero-copy">
-        <p class="kicker">Replay da partida</p>
-        <h1>Reveja seus melhores lances e baixe o vídeo da sua partida em segundos.</h1>
-        <p class="lead">O botão na quadra guarda o lance. Aqui você acha o horário e salva o arquivo no celular.</p>
+        <p class="kicker">Replay instantâneo na quadra</p>
+        <h1>Reveja seus melhores lances e baixe o vídeo em segundos.</h1>
+        <p class="lead">Apertou o botão na quadra, o lance tá salvo. Encontre o horário do seu jogo e salve o vídeo em alta qualidade direto no seu celular.</p>
         <div class="actions">
-          <a class="btn" href="#quadras" data-section="quadras">Ver quadras</a>
-          <a class="btn ghost" href="${WHATSAPP}" target="_blank" rel="noopener">Solicitar orçamento</a>
+          <a class="btn" href="#quadras" data-section="quadras">Buscar minha quadra</a>
+          <a class="btn ghost" href="${WHATSAPP}" target="_blank" rel="noopener">Solicitar orçamento para minha arena</a>
         </div>
       </div>
     </section>
@@ -136,9 +136,9 @@ async function renderInicio() {
     <section class="section" id="quadras">
       <div class="hero-panel">
         <div class="section-head">
-          <p class="kicker">Quadras</p>
-          <h2>Escolha a quadra</h2>
-          <p class="sub">Entra no local. Dentro, escolhe a quadra, o dia e a hora do lance.</p>
+          <p class="kicker">Arenas parceiras</p>
+          <h2>Encontre a sua quadra</h2>
+          <p class="sub">Selecione o local onde jogou, escolha a data e encontre o vídeo da sua partida.</p>
         </div>
         <div class="chips">${tiles}</div>
       </div>
@@ -147,67 +147,67 @@ async function renderInicio() {
     <section class="section" id="campo">
       <div class="section-head">
         <p class="kicker">Para quem joga</p>
-        <h2>O vídeo, sem complicar</h2>
+        <h2>Suas jogadas na tela em poucos cliques</h2>
       </div>
       <div class="benefit-grid">
-        <article class="benefit"><span>01</span><h3>Gravação automática da jogada</h3><p>Encontre os momentos do jogo sem complicação.</p></article>
-        <article class="benefit"><span>02</span><h3>Download direto no celular</h3><p>Assista e salve o vídeo na hora, sem criar conta.</p></article>
-        <article class="benefit"><span>03</span><h3>Suas quadras favoritas</h3><p>Crie sua conta para guardar os locais que você mais joga e voltar neles mais rápido.</p></article>
-        <article class="benefit"><span>04</span><h3>Transparência e acesso</h3><p>Veja o que a quadra libera e baixe o vídeo.</p></article>
+        <article class="benefit"><span>01</span><h3>Gravação no botão</h3><p>Apertou a botoeira na quadra? O sistema salva exatamente o lance anterior em HD.</p></article>
+        <article class="benefit"><span>02</span><h3>Download instantâneo</h3><p>Assista e baixe seus vídeos direto no celular pelo navegador, sem complicação.</p></article>
+        <article class="benefit"><span>03</span><h3>Suas quadras salvas</h3><p>Crie sua conta para favoritar os locais onde você mais joga e acessar seus lances mais rápido.</p></article>
+        <article class="benefit"><span>04</span><h3>Compartilhe nas redes</h3><p>Vídeos em alta qualidade prontos para postar no Instagram, TikTok ou mandar no grupo da resenha.</p></article>
       </div>
     </section>
 
     <section class="section about" id="sobre">
       <div class="about-intro">
-        <p class="kicker">Sobre</p>
-        <h2>Um site para levar o lance embora.</h2>
-        <p class="sub">Society, futebol, vôlei, o que rolar na quadra. Sem aplicativo: abre no navegador e baixa.</p>
+        <p class="kicker">Praticidade</p>
+        <h2>Sem aplicativos. Tudo direto no seu navegador.</h2>
+        <p class="sub">Seja no society, futevôlei, vôlei de praia ou basquete: acesse o site, encontre a partida e baixe o vídeo.</p>
       </div>
       <div class="about-band">
         <article>
-          <h3>Botão na quadra</h3>
-          <p>Aperta na hora do lance e o trecho sobe sozinho para o site.</p>
+          <h3>Sincronização automática</h3>
+          <p>Aperte o botão durante o jogo e o vídeo sobe automaticamente para a nuvem.</p>
         </article>
         <article>
-          <h3>Imagem para rever</h3>
-          <p>Vídeo nítido o bastante para ver de novo e mandar no grupo.</p>
+          <h3>Qualidade HD</h3>
+          <p>Imagem nítida para você rever cada detalhe do lance e publicar com alta definição.</p>
         </article>
         <article>
-          <h3>Onde você joga</h3>
-          <p>Quadras parceiras no Brasil. Celular ou computador, pelo site.</p>
+          <h3>Acesso universal</h3>
+          <p>Compatível com qualquer celular, tablet ou computador.</p>
         </article>
         <article>
-          <h3>O arquivo é seu</h3>
-          <p>Quem quiser guardar baixa o vídeo. No site ele fica por um tempo.</p>
+          <h3>Pronto para o grupo</h3>
+          <p>Baixe o arquivo MP4 e envie no WhatsApp do seu time instantaneamente.</p>
         </article>
       </div>
     </section>
 
     <section class="section" id="como">
       <div class="section-head">
-        <p class="kicker">Depois do jogo</p>
-        <h2>Quadra, horário, download.</h2>
+        <p class="kicker">Passo a passo</p>
+        <h2>Três passos para ter seu lance no celular</h2>
       </div>
       <ol class="steps">
-        <li class="step"><span class="num">01</span><div><h3>Escolhe a quadra e o dia</h3><p>Entra no local da partida e no dia em que você jogou.</p></div></li>
-        <li class="step"><span class="num">02</span><div><h3>Acha o horário do lance</h3><p>Só aparece hora em que alguém apertou o botão na quadra.</p></div></li>
-        <li class="step"><span class="num">03</span><div><h3>Baixa o vídeo</h3><p>Assiste na hora e salva o arquivo no celular.</p></div></li>
+        <li class="step"><span class="num">01</span><div><h3>Escolha a arena e a data</h3><p>Acesse o local e o dia em que a partida aconteceu.</p></div></li>
+        <li class="step"><span class="num">02</span><div><h3>Localize o horário</h3><p>Selecione exatamente o momento em que o botão foi acionado na quadra.</p></div></li>
+        <li class="step"><span class="num">03</span><div><h3>Baixe e compartilhe</h3><p>Assista na hora e salve o arquivo diretamente na galeria do seu celular.</p></div></li>
       </ol>
     </section>
 
     <section class="section" id="termos">
       <div class="section-head">
-        <p class="kicker">Regras do site</p>
-        <h2>O que vale ao usar</h2>
-        <p class="sub">Ao entrar no site, você aceita estes pontos. Eles podem mudar conforme o serviço cresce.</p>
+        <p class="kicker">Informações úteis</p>
+        <h2>Como funciona o CliquePlay</h2>
+        <p class="sub">Transparência total para você e sua arena.</p>
       </div>
       <div class="terms">
-        <article class="term"><h3><span>01</span> O que é</h3><p>O site mostra o replay das quadras parceiras quando alguém aperta o botão. O acesso é pelo navegador do celular ou do computador.</p></article>
-        <article class="term"><h3><span>02</span> O que pode</h3><p>Dá para assistir, baixar e compartilhar os lances liberados. Não use o vídeo para ofender alguém ou ferir direito de imagem.</p></article>
-        <article class="term"><h3><span>03</span> Quanto tempo fica</h3><p>Os vídeos ficam no ar por um período. Quem quiser guardar baixa o arquivo. O CliquePlay não guarda para sempre.</p></article>
-        <article class="term"><h3><span>04</span> O que é filmado</h3><p>A gravação é da área de jogo, com aviso visível na quadra. Área privada não entra.</p></article>
-        <article class="term"><h3><span>05</span> Vídeo fechado</h3><p>O dono da quadra pode bloquear um vídeo. Se houver cobrança, o valor é dele. Enquanto o pagamento não estiver ligado, o pedido fica só anotado e o vídeo continua fechado.</p></article>
-        <article class="term"><h3><span>06</span> Conta</h3><p>Criar conta é opcional. Ela serve para marcar quadras e pedir um vídeo fechado.</p></article>
+        <article class="term"><h3><span>01</span> Como funciona a gravação</h3><p>Capturamos os lances gravados a partir do acionamento do botão instalado na quadra.</p></article>
+        <article class="term"><h3><span>02</span> Uso e compartilhamento</h3><p>Os vídeos são destinados para entretenimento e uso pessoal nas redes sociais.</p></article>
+        <article class="term"><h3><span>03</span> Armazenamento de vídeos</h3><p>Os lances ficam disponíveis na plataforma por tempo determinado. Baixe o arquivo para guardar para sempre.</p></article>
+        <article class="term"><h3><span>04</span> Privacidade e câmeras</h3><p>Filmamos exclusivamente a área de jogo com sinalização visível na arena.</p></article>
+        <article class="term"><h3><span>05</span> Acesso e download</h3><p>O download pode ser gratuito ou pago dependendo do modelo adotado pela arena parceira.</p></article>
+        <article class="term"><h3><span>06</span> Criação de conta</h3><p>Crie uma conta gratuita para favoritar arenas e acompanhar seu histórico de lances.</p></article>
       </div>
     </section>
     ${footer()}
@@ -224,7 +224,7 @@ function footer() {
       <div class="footer-main">
         <div class="footer-brand">
           <strong>Clique<span>Play</span></strong>
-          <p>O replay da partida, pronto para assistir e baixar.</p>
+          <p>Reveja o lance e baixe o vídeo em segundos.</p>
         </div>
         <nav>
           <a href="#inicio" data-section="inicio">Início</a>

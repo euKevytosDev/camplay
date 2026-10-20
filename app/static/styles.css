@@ -88,6 +88,8 @@ button { cursor: pointer; }
   font-size: 1rem;
   display: inline-flex;
   align-items: center;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .burger {
