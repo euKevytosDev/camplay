@@ -3,6 +3,9 @@ const accountBtn = document.querySelector("#account-btn");
 const menuAccount = document.querySelector("#menu-account");
 const burger = document.querySelector("#burger");
 const HOME = new Set(["inicio", "quadras", "sobre", "como", "termos"]);
+const WHATSAPP =
+  "https://wa.me/5531991141208?text=" +
+  encodeURIComponent("quero solicitar orçamento para o sistema de replays");
 const DEMO = [
   "https://assets.mixkit.co/videos/2918/2918-720.mp4",
   "https://assets.mixkit.co/videos/42530/42530-720.mp4",
@@ -125,18 +128,21 @@ async function renderInicio() {
         <p class="lead">O botão na quadra guarda o lance. Aqui você acha o horário e salva o arquivo no celular.</p>
         <div class="actions">
           <a class="btn" href="#quadras" data-section="quadras">Ver quadras</a>
-          <a class="btn ghost" href="#como" data-section="como">Como baixar</a>
+          <a class="btn ghost" href="${WHATSAPP}" target="_blank" rel="noopener">Solicitar orçamento</a>
         </div>
       </div>
-      <div class="hero-panel" id="quadras">
+    </section>
+    ${demoReel()}
+    <section class="section" id="quadras">
+      <div class="hero-panel">
         <div class="section-head">
+          <p class="kicker">Quadras</p>
           <h2>Escolha a quadra</h2>
           <p class="sub">Entra no local. Dentro, escolhe a quadra, o dia e a hora do lance.</p>
         </div>
         <div class="chips">${tiles}</div>
       </div>
     </section>
-    ${demoReel()}
 
     <section class="section" id="campo">
       <div class="section-head">
@@ -224,8 +230,8 @@ function footer() {
           <a href="#inicio" data-section="inicio">Início</a>
           <a href="#quadras" data-section="quadras">Quadras</a>
           <a href="#sobre" data-section="sobre">Sobre</a>
-          <a href="#como" data-section="como">Como baixar</a>
           <a href="#termos" data-section="termos">Termos</a>
+          <a href="${WHATSAPP}" target="_blank" rel="noopener">Orçamento</a>
           <span>cliqueplay.com.br</span>
         </nav>
         <div class="footer-social">
