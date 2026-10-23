@@ -3,6 +3,12 @@ const accountBtn = document.querySelector("#account-btn");
 const menuAccount = document.querySelector("#menu-account");
 const burger = document.querySelector("#burger");
 const HOME = new Set(["inicio", "quadras", "sobre", "como", "termos"]);
+const LEGAL = {
+  "termos-de-uso": "Termos de uso",
+  privacidade: "Privacidade",
+  cookies: "Cookies",
+  direitos: "Direitos autorais",
+};
 const WHATSAPP =
   "https://wa.me/5531991141208?text=" +
   encodeURIComponent("quero solicitar orçamento para o sistema de replays");
@@ -209,6 +215,7 @@ async function renderInicio() {
         <article class="term"><h3><span>05</span> Acesso e download</h3><p>O download pode ser gratuito ou pago dependendo do modelo adotado pela arena parceira.</p></article>
         <article class="term"><h3><span>06</span> Criação de conta</h3><p>Crie uma conta gratuita para favoritar arenas e acompanhar seu histórico de lances.</p></article>
       </div>
+      <p class="legal-jump">Documentos: <a href="#termos-de-uso">Termos de uso</a> · <a href="#privacidade">Privacidade</a> · <a href="#cookies">Cookies</a> · <a href="#direitos">Direitos autorais</a></p>
     </section>
     ${footer()}
   `;
@@ -230,9 +237,11 @@ function footer() {
           <a href="#inicio" data-section="inicio">Início</a>
           <a href="#quadras" data-section="quadras">Quadras</a>
           <a href="#sobre" data-section="sobre">Sobre</a>
-          <a href="#termos" data-section="termos">Termos</a>
+          <a href="#termos-de-uso">Termos de uso</a>
+          <a href="#privacidade">Privacidade</a>
+          <a href="#cookies">Cookies</a>
+          <a href="#direitos">Direitos autorais</a>
           <a href="${WHATSAPP}" target="_blank" rel="noopener">Orçamento</a>
-          <span>cliqueplay.com.br</span>
         </nav>
         <div class="footer-social">
           <span>Siga no Instagram</span>
@@ -246,10 +255,119 @@ function footer() {
           </a>
         </div>
       </div>
-      <p class="footer-copy">© 2026 CliquePlay. Todos os direitos reservados.</p>
+      <p class="footer-copy">© 2026 CliquePlay. Marca, layout, software e conteúdo são protegidos. Reprodução sem autorização é proibida.</p>
     </footer>
   `;
 }
+
+function legalNav(current) {
+  return `
+    <nav class="legal-nav">
+      ${Object.entries(LEGAL).map(([slug, label]) => `
+        <a class="${slug === current ? "on" : ""}" href="#${slug}">${label}</a>
+      `).join("")}
+    </nav>
+  `;
+}
+
+function renderLegal(slug) {
+  homeReady = false;
+  view = slug;
+  const title = LEGAL[slug];
+  const body = LEGAL_TEXT[slug] || "<p>Documento em atualização.</p>";
+  document.title = `${title} — CliquePlay`;
+  app.innerHTML = `
+    <section class="section legal-page">
+      <p class="kicker">Documentos</p>
+      <h1>${title}</h1>
+      <p class="sub">CliquePlay · cliqueplay.com.br · atualizado em 23 de outubro de 2026.</p>
+      ${legalNav(slug)}
+      <div class="legal-body">${body}</div>
+    </section>
+    ${footer()}
+  `;
+  window.scrollTo(0, 0);
+  setActive();
+}
+
+const LEGAL_TEXT = {
+  "termos-de-uso": `
+    <h2>1. O serviço</h2>
+    <p>A CliquePlay oferece replay de lances em quadras esportivas. O jogador aperta o botão no local, o sistema guarda os últimos segundos e o vídeo fica neste site para assistir e baixar, pelo navegador, sem aplicativo.</p>
+    <p>O uso do site implica aceite destes termos. Se não concordar, não utilize a plataforma.</p>
+    <h2>2. Conta</h2>
+    <p>Não é obrigatório criar conta para ver e baixar lances liberados. A conta guarda nome, e-mail, quadras favoritas e pedidos de vídeo fechado. Você é responsável pelos dados que informar e por manter a senha em sigilo.</p>
+    <h2>3. Vídeos</h2>
+    <p>Os vídeos são para entretenimento e uso pessoal, inclusive redes sociais. A gravação é da área de jogo. A arena mantém aviso visível de que o espaço é filmado. Os arquivos ficam no site por tempo limitado; quem quiser guardar o lance deve baixar.</p>
+    <p>O download pode ser gratuito ou cobrado, conforme o modelo da arena. Se houver cobrança, o valor é da arena, não da CliquePlay, até que o pagamento no site esteja em operação.</p>
+    <h2>4. Arenas</h2>
+    <p>A internet no local é da arena. Sem conexão, o lance não sobe. A CliquePlay não se responsabiliza por Wi-Fi caído, energia cortada ou equipamento danificado por mau uso, furto ou clima, quando o kit for da arena.</p>
+    <h2>5. Conduta</h2>
+    <p>É proibido tentar invadir o sistema, sobrecarregar o site, copiar a plataforma, raspar vídeos em massa ou usar o serviço para fins ilícitos. A CliquePlay pode suspender acesso em caso de abuso.</p>
+    <h2>6. Propriedade</h2>
+    <p>Marca CliquePlay, logotipo, layout, textos, código e forma de funcionamento são da CliquePlay. Não podem ser copiados, clonados nem usados para montar serviço concorrente sem autorização escrita.</p>
+    <h2>7. Contato e foro</h2>
+    <p>Dúvidas pelo WhatsApp no orçamento do site ou pelo Instagram <a href="https://instagram.com/cliqueplayoficial" target="_blank" rel="noopener">@cliqueplayoficial</a>. Estes termos seguem as leis do Brasil. Foro da comarca do responsável pela CliquePlay, salvo regra de consumo mais favorável a você.</p>
+  `,
+  privacidade: `
+    <h2>1. Quem trata os dados</h2>
+    <p>O controlador é a CliquePlay, responsável pelo site cliqueplay.com.br. Pedidos sobre seus dados: WhatsApp do orçamento no site ou Instagram <a href="https://instagram.com/cliqueplayoficial" target="_blank" rel="noopener">@cliqueplayoficial</a>.</p>
+    <h2>2. O que coletamos</h2>
+    <ul>
+      <li>Se criar conta: nome, e-mail e senha (a senha é guardada de forma protegida, não em texto aberto).</li>
+      <li>Favoritos de quadras e pedidos de vídeo fechado ligados à conta.</li>
+      <li>Vídeos dos lances gravados quando o botão da quadra é apertado, com data, hora e local.</li>
+      <li>Dados técnicos de acesso, como IP e tipo de navegador, para segurança e funcionamento.</li>
+      <li>Mensagens que você envia por WhatsApp ou Instagram se nos procurar.</li>
+    </ul>
+    <h2>3. Para que usamos</h2>
+    <p>Para publicar o replay, permitir o download, manter sua conta, atender pedido de orçamento, proteger o sistema e cumprir lei. Não vendemos cadastro para terceiros.</p>
+    <h2>4. Filmagem na quadra</h2>
+    <p>A câmera cobre a área de jogo. A arena deve deixar aviso visível. O vídeo pode mostrar pessoas que estavam na quadra no momento do lance. O uso previsto é esporte e entretenimento. A arena é responsável por informar os frequentadores.</p>
+    <h2>5. Quanto tempo fica</h2>
+    <p>Os lances no site ficam por tempo determinado, em regra poucos dias. Depois são apagados. Quem quiser o arquivo em definitivo deve baixar. Dados de conta permanecem enquanto a conta existir. Você pode pedir exclusão pelo contato acima.</p>
+    <h2>6. Com quem compartilhamos</h2>
+    <p>Com a infraestrutura que hospeda o site e o vídeo, só o necessário para o serviço funcionar. Com a arena, no que disser respeito aos lances daquele local. Não há venda de lista de usuários.</p>
+    <h2>7. Seus direitos (LGPD)</h2>
+    <p>Você pode confirmar se tratamos dados, acessar, corrigir, pedir exclusão, portabilidade quando couber, informação sobre compartilhamentos e revogar consentimento. Resposta pelo mesmo canal de contato. Também pode falar com a ANPD.</p>
+    <h2>8. Menores</h2>
+    <p>O site não é dirigido a crianças. Quadras com menores devem seguir o aviso de filmagem da arena e a lei aplicável.</p>
+  `,
+  cookies: `
+    <h2>1. O que são cookies</h2>
+    <p>Cookies são arquivos pequenos no navegador. Alguns são precisos para o site abrir. Outros só lembram uma escolha sua.</p>
+    <h2>2. O que a CliquePlay usa</h2>
+    <ul>
+      <li><strong>Cookie de sessão da conta.</strong> Necessário para entrar e manter o login. Sem ele a conta não funciona.</li>
+      <li><strong>Preferência de aviso de cookies.</strong> Guarda que você já viu e aceitou este aviso, para não repetir em todo acesso.</li>
+    </ul>
+    <p>Não usamos cookies de publicidade de terceiros para te seguir pela internet.</p>
+    <h2>3. Conteúdo de outros sites</h2>
+    <p>As fontes do site podem ser carregadas do Google Fonts. Os vídeos de exemplo da página inicial vêm de um serviço de vídeo de demonstração, não são lances reais das arenas CliquePlay. Esses serviços podem registrar acesso técnico nas regras deles.</p>
+    <h2>4. Como gerenciar</h2>
+    <p>Você pode apagar cookies no navegador. Se apagar o de sessão, precisará entrar de novo na conta. O aviso de cookies volta a aparecer se essa preferência for apagada.</p>
+    <h2>5. Base legal</h2>
+    <p>Cookies necessários: execução do serviço e interesse legítimo de segurança. Aviso e preferência: transparência da LGPD. Contato sobre cookies pelos mesmos canais da Política de Privacidade.</p>
+  `,
+  direitos: `
+    <h2>1. O que é da CliquePlay</h2>
+    <p>São protegidos por direitos autorais e de marca, entre outros: o nome CliquePlay, o logotipo, o visual do site, os textos, o software, a forma do botão de replay e a organização da plataforma. Todos os direitos reservados.</p>
+    <h2>2. O que não pode</h2>
+    <ul>
+      <li>Copiar páginas, textos ou layout para outro site.</li>
+      <li>Clonar o sistema, o botão ou o fluxo de replay como produto próprio.</li>
+      <li>Usar a marca CliquePlay sem autorização.</li>
+      <li>Baixar o site inteiro, raspar vídeos em massa ou extrair o código para revender.</li>
+    </ul>
+    <p>Ver ou baixar um lance pelo fluxo normal do site, para uso pessoal, não é cópia da plataforma.</p>
+    <h2>3. Vídeos dos lances</h2>
+    <p>O arquivo do lance destina-se a quem jogou ou assistiu naquele horário, para entretenimento e redes pessoais. Não autoriza uso comercial da marca CliquePlay nem republicar o site como se fosse seu.</p>
+    <h2>4. Vídeos de exemplo</h2>
+    <p>Os filmes da faixa “Exemplos de jogo” são material de demonstração de terceiros. Não são gravação de arena CliquePlay e não podem ser apresentados como quadra nossa.</p>
+    <h2>5. Autorização</h2>
+    <p>Qualquer uso além do permitido nestes documentos depende de autorização escrita da CliquePlay. Pedidos pelo WhatsApp de orçamento ou pelo Instagram <a href="https://instagram.com/cliqueplayoficial" target="_blank" rel="noopener">@cliqueplayoficial</a>.</p>
+  `,
+};
 
 function courtCard(court) {
   const star = court.favorite ? " · favorita" : "";
@@ -541,10 +659,15 @@ async function route() {
     if (hash.startsWith("quadra/")) {
       await renderQuadra(decodeURIComponent(hash.slice("quadra/".length)));
     } else if (hash === "conta") {
+      document.title = "Sua conta — CliquePlay";
       renderConta();
+    } else if (LEGAL[hash]) {
+      renderLegal(hash);
     } else if (HOME.has(hash)) {
+      document.title = "CliquePlay — Reveja o lance e baixe o vídeo";
       await showHome(hash);
     } else {
+      document.title = "CliquePlay — Reveja o lance e baixe o vídeo";
       await showHome("inicio");
     }
   } catch (err) {
@@ -579,6 +702,16 @@ document.addEventListener("click", (event) => {
   location.hash = "#" + id;
 });
 window.addEventListener("hashchange", route);
+
+const cookieBar = document.querySelector("#cookie-bar");
+const cookieOk = document.querySelector("#cookie-ok");
+if (cookieBar && !localStorage.getItem("cliqueplay-cookies")) {
+  cookieBar.hidden = false;
+}
+cookieOk?.addEventListener("click", () => {
+  localStorage.setItem("cliqueplay-cookies", "1");
+  cookieBar.hidden = true;
+});
 
 api("/api/me").then((data) => {
   me = data.user;
