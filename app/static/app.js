@@ -96,6 +96,87 @@ function shell(title, inner, extra = "") {
   setActive();
 }
 
+function esc(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/"/g, "&quot;");
+}
+
+function heroStage() {
+  return `
+    <aside class="hero-stage" aria-label="Exemplo de replay">
+      <div class="stage-card">
+        <div class="stage-top">
+          <span class="stage-live"></span>
+          <span>Lance · 00:28</span>
+        </div>
+        <video autoplay muted loop playsinline preload="metadata" src="${DEMO[0]}"></video>
+        <div class="stage-bar">
+          <span>Pronto no celular</span>
+          <span class="stage-dl">↓ Baixar HD</span>
+        </div>
+      </div>
+      <p class="stage-note">Exemplo de jogo. Não é quadra CliquePlay.</p>
+    </aside>
+  `;
+}
+
+function bindArenaSearch(courts) {
+  const form = document.querySelector("#arena-search");
+  const input = form?.querySelector("input");
+  const hits = form?.querySelector(".search-hits");
+  if (!form || !input || !hits) return;
+
+  function match(query) {
+    const needle = query.trim().toLowerCase();
+    if (!needle) return courts;
+    return courts.filter((court) =>
+      `${court.name} ${court.city}`.toLowerCase().includes(needle)
+    );
+  }
+
+  function paint() {
+    const query = input.value.trim();
+    if (!query) {
+      hits.hidden = true;
+      hits.innerHTML = "";
+      return;
+    }
+    const found = match(query).slice(0, 6);
+    hits.hidden = false;
+    hits.innerHTML = found.length
+      ? found.map((court) => `
+          <a href="#quadra/${esc(court.slug)}">
+            <strong>${esc(court.name)}</strong>
+            <small>${esc(court.city)}</small>
+          </a>
+        `).join("")
+      : `<p>Nenhuma arena com esse nome. Confira a lista abaixo.</p>`;
+  }
+
+  input.addEventListener("input", paint);
+  input.addEventListener("focus", paint);
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const found = match(input.value);
+    if (found.length === 1) {
+      location.hash = `#quadra/${found[0].slug}`;
+      return;
+    }
+    hits.hidden = true;
+    scrollToId("quadras");
+  });
+  if (!window.__searchClose) {
+    window.__searchClose = true;
+    document.addEventListener("click", (event) => {
+      document.querySelectorAll(".search-hits").forEach((box) => {
+        if (!box.parentElement?.contains(event.target)) box.hidden = true;
+      });
+    });
+  }
+}
+
 function demoReel() {
   const cards = [...DEMO, ...DEMO].map((src) => `
     <figure class="reel-card">
@@ -129,14 +210,24 @@ async function renderInicio() {
   app.innerHTML = `
     <section class="hero" id="inicio">
       <div class="hero-copy">
-        <p class="kicker">Replay instantâneo na quadra</p>
-        <h1>Reveja seus melhores lances e baixe o vídeo em segundos.</h1>
-        <p class="lead">Apertou o botão na quadra, o lance tá salvo. Encontre o horário do seu jogo e salve o vídeo em alta qualidade direto no seu celular.</p>
+        <p class="kicker">Do campo para o celular</p>
+        <h1>Seu lance de craque gravado em alta definição.</h1>
+        <p class="lead">Sua jogada a um clique de distância. Encontre sua arena, selecione o horário e baixe direto no seu celular.</p>
+        <form class="hero-search" id="arena-search">
+          <input type="search" name="q" placeholder="Digite o nome da arena ou cidade..." autocomplete="off" aria-label="Buscar arena">
+          <button class="btn" type="submit">Buscar</button>
+          <div class="search-hits" hidden></div>
+        </form>
+        <div class="hero-seals">
+          <span>Sem aplicativo</span>
+          <span>Download em HD</span>
+          <span>Sem conta para baixar</span>
+        </div>
         <div class="actions">
-          <a class="btn" href="#quadras" data-section="quadras">Buscar minha quadra</a>
           <a class="btn ghost" href="${WHATSAPP}" target="_blank" rel="noopener">Solicitar orçamento para minha arena</a>
         </div>
       </div>
+      ${heroStage()}
     </section>
     ${demoReel()}
     <section class="section" id="quadras">
@@ -156,7 +247,7 @@ async function renderInicio() {
         <h2>Suas jogadas na tela em poucos cliques</h2>
       </div>
       <div class="benefit-grid">
-        <article class="benefit"><span>01</span><h3>Gravação no botão</h3><p>Apertou a botoeira na quadra? O sistema salva exatamente o lance anterior em HD.</p></article>
+        <article class="benefit"><span>01</span><h3>Gravação no botão</h3><p>O toque na botoeira trava o momento em HD e manda o arquivo para o celular.</p></article>
         <article class="benefit"><span>02</span><h3>Download instantâneo</h3><p>Assista e baixe seus vídeos direto no celular pelo navegador, sem complicação.</p></article>
         <article class="benefit"><span>03</span><h3>Suas quadras salvas</h3><p>Crie sua conta para favoritar os locais onde você mais joga e acessar seus lances mais rápido.</p></article>
         <article class="benefit"><span>04</span><h3>Compartilhe nas redes</h3><p>Vídeos em alta qualidade prontos para postar no Instagram, TikTok ou mandar no grupo da resenha.</p></article>
@@ -220,6 +311,7 @@ async function renderInicio() {
     ${footer()}
   `;
   homeReady = true;
+  bindArenaSearch(courts);
   setActive();
 }
 
@@ -664,10 +756,10 @@ async function route() {
     } else if (LEGAL[hash]) {
       renderLegal(hash);
     } else if (HOME.has(hash)) {
-      document.title = "CliquePlay — Reveja o lance e baixe o vídeo";
+      document.title = "CliquePlay — Seu lance de craque no celular";
       await showHome(hash);
     } else {
-      document.title = "CliquePlay — Reveja o lance e baixe o vídeo";
+      document.title = "CliquePlay — Seu lance de craque no celular";
       await showHome("inicio");
     }
   } catch (err) {
